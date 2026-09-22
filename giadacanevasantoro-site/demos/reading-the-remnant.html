@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interactive explainer: drag a binary black hole merger's masses and spins and watch the remnant's quasinormal-mode frequencies, damping times and relative amplitudes update live, plus a simulation of the horizon ringing down.">
+<title>Reading the Remnant</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,380;0,9..144,560;1,9..144,420;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#F5F6F8; --panel:#FFFFFF; --panel-alt:#ECEEF3; --panel-2:#F0F1F5;
+    --ink:#12141C; --ink-2:#4B5163; --ink-3:#868C9E;
+    --border:rgba(18,20,28,0.11); --border-strong:rgba(18,20,28,0.20);
+    --accent:#4a3aa7; --accent-soft:rgba(74,58,167,0.12);
+    --series-220:#2a78d6; --series-221:#eb6834; --series-210:#1baf7a;
+    --series-320:#eda100; --series-330:#e87ba4; --series-440:#008300;
+    --grid-line:#e1e2e8; --focus-ring:#4a3aa7;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0A0E16; --panel:#12151F; --panel-alt:#171B27; --panel-2:#151926;
+      --ink:#F1F2F6; --ink-2:#A9AFC2; --ink-3:#6B7188;
+      --border:rgba(255,255,255,0.11); --border-strong:rgba(255,255,255,0.22);
+      --accent:#9085e9; --accent-soft:rgba(144,133,233,0.16);
+      --series-220:#3987e5; --series-221:#d95926; --series-210:#199e70;
+      --series-320:#c98500; --series-330:#d55181; --series-440:#3fbf3f;
+      --grid-line:#242938;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0A0E16; --panel:#12151F; --panel-alt:#171B27; --panel-2:#151926;
+    --ink:#F1F2F6; --ink-2:#A9AFC2; --ink-3:#6B7188;
+    --border:rgba(255,255,255,0.11); --border-strong:rgba(255,255,255,0.22);
+    --accent:#9085e9; --accent-soft:rgba(144,133,233,0.16);
+    --series-220:#3987e5; --series-221:#d95926; --series-210:#199e70;
+    --series-320:#c98500; --series-330:#d55181; --series-440:#3fbf3f;
+    --grid-line:#242938;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, sans-serif;
+    padding-inline:20px; padding-block:0 48px;
+    display:flex; justify-content:center;
+  }
+  .page{ width:100%; max-width:1120px; padding-top:40px; }
+
+  .mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+
+  /* ---- Masthead ---- */
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace; font-size:12.5px; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--accent); margin:0 0 10px;
+    display:flex; align-items:center; gap:9px;
+  }
+  .eyebrow::before{ content:""; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  h1{
+    font-family:"Fraunces", Georgia, serif; font-weight:560; font-size:clamp(2rem,5vw,3.05rem);
+    letter-spacing:-0.01em; line-height:1.03; margin:0 0 18px; text-wrap:balance;
+  }
+  .lede{
+    max-width:66ch; font-family:"Fraunces", Georgia, serif; font-style:italic; font-weight:420;
+    font-size:1.2rem; line-height:1.56; color:var(--ink-2); margin:0 0 14px; text-wrap:pretty;
+  }
+  .lede em{ color:var(--ink); font-style:italic; font-weight:500; }
+  .credit{
+    font-size:13.5px; color:var(--ink-3); margin:0 0 40px; line-height:1.6; max-width:66ch;
+  }
+  .credit a{ color:var(--ink-2); text-decoration-color:var(--border-strong); text-underline-offset:3px; }
+  .credit a:hover{ color:var(--accent); }
+
+  /* ---- Control deck ---- */
+  .deck{
+    background:var(--panel); border:1px solid var(--border); border-radius:16px;
+    padding:22px 24px 24px; margin-bottom:22px;
+  }
+  .deck-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+  .deck-title{ font-family:"Fraunces", serif; font-weight:560; font-size:1.2rem; }
+  .mode-toggle{
+    display:inline-flex; background:var(--panel-alt); border:1px solid var(--border); border-radius:10px; padding:3px; gap:2px;
+  }
+  .mode-toggle button{
+    font-family:"IBM Plex Sans"; font-size:13px; font-weight:500; color:var(--ink-2);
+    background:transparent; border:none; border-radius:8px; padding:7px 13px; cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .mode-toggle button.active{ background:var(--accent); color:#fff; }
+  .mode-toggle button:not(.active):hover{ color:var(--ink); }
+  .mode-toggle button:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+
+  .controls-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:20px 26px;
+  }
+  .field{ display:flex; flex-direction:column; gap:7px; }
+  .field-label{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .field-label span:first-child{ font-size:12.5px; color:var(--ink-2); font-weight:500; }
+  .field-label output{ font-family:"IBM Plex Mono"; font-size:13px; color:var(--ink); font-variant-numeric:tabular-nums; }
+  input[type="range"]{
+    -webkit-appearance:none; appearance:none; width:100%; height:22px; background:transparent; cursor:pointer; margin:0;
+  }
+  input[type="range"]::-webkit-slider-runnable-track{ height:4px; background:var(--border-strong); border-radius:2px; }
+  input[type="range"]::-moz-range-track{ height:4px; background:var(--border-strong); border-radius:2px; }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent);
+    border:2px solid var(--panel); box-shadow:0 0 0 1px var(--border-strong); margin-top:-6px; cursor:grab;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:14px; height:14px; border-radius:50%; background:var(--accent); border:2px solid var(--panel);
+    box-shadow:0 0 0 1px var(--border-strong); cursor:grab;
+  }
+  input[type="range"]:focus-visible::-webkit-slider-thumb{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+
+  .readout-row{
+    display:flex; flex-wrap:wrap; gap:10px 28px; margin-top:20px; padding-top:18px; border-top:1px solid var(--border);
+  }
+  .readout{ display:flex; flex-direction:column; gap:3px; min-width:88px; }
+  .readout .k{ font-size:11px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em; }
+  .readout .v{ font-family:"IBM Plex Mono"; font-size:15px; font-weight:500; }
+  .aux-note{ font-size:12px; color:var(--ink-3); margin-top:14px; line-height:1.55; max-width:60ch; }
+
+  /* ---- Panels ---- */
+  .panels{ display:grid; grid-template-columns:1.15fr 0.85fr; gap:20px; align-items:start; }
+  @media (max-width:860px){ .panels{ grid-template-columns:1fr; } }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:22px 24px 24px; }
+  .panel-head{ margin-bottom:4px; }
+  .panel-title{ font-family:"Fraunces", serif; font-weight:560; font-size:1.15rem; margin:0 0 3px; }
+  .panel-sub{ font-size:13px; color:var(--ink-2); margin:0 0 16px; line-height:1.5; }
+  .subblock-title{
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-3); font-weight:500;
+    margin:20px 0 8px;
+  }
+  .subblock-title:first-of-type{ margin-top:6px; }
+
+  svg.chart{ width:100%; height:auto; display:block; overflow:visible; }
+  .axis-line{ stroke:var(--border-strong); stroke-width:1; }
+  .grid-line{ stroke:var(--grid-line); stroke-width:1; }
+  .tick-label{ font-family:"IBM Plex Mono"; font-size:10.5px; fill:var(--ink-3); }
+  .axis-caption{ font-family:"IBM Plex Sans"; font-size:11px; fill:var(--ink-3); }
+  .mode-label{ font-family:"IBM Plex Mono"; font-size:11px; font-weight:500; fill:var(--ink); }
+  .mode-mark{ stroke:var(--panel); stroke-width:1.5; cursor:pointer; }
+  .trace-line{ fill:none; stroke-width:2; }
+  .trace-total{ fill:none; stroke:var(--ink); stroke-width:2; }
+  .bar-rect{ cursor:pointer; }
+  .bar-value{ font-family:"IBM Plex Mono"; font-size:11px; fill:var(--ink-2); }
+  .bar-name{ font-family:"IBM Plex Mono"; font-size:11.5px; fill:var(--ink); font-weight:500; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 16px; margin:14px 0 2px; }
+  .legend-item{ display:flex; align-items:center; gap:6px; font-family:"IBM Plex Mono"; font-size:11.5px; color:var(--ink-2); }
+  .legend-swatch{ width:9px; height:9px; border-radius:2px; flex:none; }
+
+  .illus-flag{
+    display:flex; gap:8px; align-items:flex-start; background:var(--panel-2); border:1px solid var(--border);
+    border-radius:10px; padding:10px 12px; margin-top:16px; font-size:12px; line-height:1.55; color:var(--ink-2);
+  }
+  .illus-flag .tag{
+    flex:none; font-family:"IBM Plex Mono"; font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--accent); background:var(--accent-soft); border-radius:5px; padding:2px 6px; margin-top:1px;
+  }
+
+  .tooltip{
+    position:fixed; pointer-events:none; z-index:40; background:var(--ink); color:var(--bg);
+    font-family:"IBM Plex Mono"; font-size:11.5px; line-height:1.5; padding:8px 10px; border-radius:8px;
+    box-shadow:0 8px 24px rgba(0,0,0,.28); opacity:0; transform:translateY(2px); transition:opacity .1s, transform .1s;
+    max-width:220px; white-space:nowrap;
+  }
+  :root:not([data-theme="light"]) .tooltip{ background:#EEF0F6; color:#12141C; }
+  :root[data-theme="dark"] .tooltip{ background:#EEF0F6; color:#12141C; }
+  .tooltip.show{ opacity:1; transform:translateY(0); }
+  .tooltip .t-title{ font-weight:600; margin-bottom:2px; }
+  .tooltip .t-row{ display:flex; justify-content:space-between; gap:14px; opacity:.85; }
+
+  /* ---- Horizon simulation ---- */
+  .panel-wide{ margin-top:20px; }
+  .horizon-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .horizon-controls{ display:flex; align-items:center; gap:10px; flex:none; }
+  .play-btn{
+    display:inline-flex; align-items:center; gap:7px; font-family:"IBM Plex Mono"; font-size:12px; font-weight:500;
+    color:var(--ink); background:var(--panel-alt); border:1px solid var(--border); border-radius:9px;
+    padding:7px 12px; cursor:pointer;
+  }
+  .play-btn:hover{ border-color:var(--border-strong); }
+  .play-btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .play-btn .icon{ width:10px; text-align:center; }
+  .horizon-stage{
+    display:flex; justify-content:center; margin-top:8px;
+    background:radial-gradient(ellipse at 50% 38%, var(--panel-2) 0%, var(--panel) 68%);
+    border-radius:14px; border:1px solid var(--border);
+  }
+  #horizon-canvas{ width:100%; max-width:460px; height:auto; aspect-ratio:520/430; display:block; }
+  .horizon-caption{ font-size:12px; color:var(--ink-3); text-align:center; margin-top:10px; line-height:1.5; }
+
+  footer{ margin-top:30px; padding-top:20px; border-top:1px solid var(--border); }
+  .methods{ font-size:12px; line-height:1.75; color:var(--ink-3); max-width:78ch; }
+  .methods a{ color:var(--ink-2); }
+  .methods a:hover{ color:var(--accent); }
+  .methods dt{ display:inline; font-weight:600; color:var(--ink-2); }
+  .methods dd{ display:inline; margin:0; }
+  .methods li{ margin-bottom:6px; }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+
+</head>
+<body>
+<div class="page">
+
+  <p class="eyebrow">Interactive · Kerr quasinormal modes</p>
+  <h1>Reading the Remnant</h1>
+  <p class="lede">A binary black hole merger radiates one chirp, but the black hole it leaves behind rings in <em>many</em> tones at once &mdash; each one fixed entirely by the remnant's mass and spin. If general relativity is right, every tone has to agree on the same two numbers. That agreement is the whole game.</p>
+  <p class="credit">Built after Brian Seymour's lovely <a href="https://www.briancseymour.com/reading-spin-from-strain/" target="_blank" rel="noopener">Reading Spin from Strain</a>, which does the same kind of dragging&ndash;and&ndash;looking for the inspiral. This is the ringdown half: instead of one waveform shape encoding spin, you get a discrete spectrum &mdash; a Kerr black hole's quasinormal modes &mdash; encoding the remnant's mass and spin twice over, once per mode.</p>
+
+  <div class="deck">
+    <div class="deck-head">
+      <div class="deck-title">Set up the merger</div>
+      <div class="mode-toggle" role="tablist" aria-label="Input mode">
+        <button type="button" id="btn-progenitor" class="active" role="tab" aria-selected="true">From progenitor</button>
+        <button type="button" id="btn-remnant" role="tab" aria-selected="false">From remnant</button>
+      </div>
+    </div>
+
+    <div id="panel-progenitor" class="controls-grid">
+      <div class="field">
+        <div class="field-label"><span>Primary mass m&#8321;</span><output id="out-m1">36 M&#9737;</output></div>
+        <input type="range" id="in-m1" min="5" max="150" step="1" value="36">
+      </div>
+      <div class="field">
+        <div class="field-label"><span>Secondary mass m&#8322;</span><output id="out-m2">29 M&#9737;</output></div>
+        <input type="range" id="in-m2" min="5" max="150" step="1" value="29">
+      </div>
+      <div class="field">
+        <div class="field-label"><span>Spin &chi;&#8321; (aligned)</span><output id="out-chi1">0.00</output></div>
+        <input type="range" id="in-chi1" min="-0.99" max="0.99" step="0.01" value="0">
+      </div>
+      <div class="field">
+        <div class="field-label"><span>Spin &chi;&#8322; (aligned)</span><output id="out-chi2">0.00</output></div>
+        <input type="range" id="in-chi2" min="-0.99" max="0.99" step="0.01" value="0">
+      </div>
+    </div>
+
+    <div id="panel-remnant" class="controls-grid" style="display:none">
+      <div class="field">
+        <div class="field-label"><span>Remnant mass M<sub>f</sub></span><output id="out-mf">62 M&#9737;</output></div>
+        <input type="range" id="in-mf" min="5" max="300" step="1" value="62">
+      </div>
+      <div class="field">
+        <div class="field-label"><span>Remnant spin &chi;<sub>f</sub></span><output id="out-chif">0.67</output></div>
+        <input type="range" id="in-chif" min="0" max="0.998" step="0.001" value="0.67">
+      </div>
+      <div class="field">
+        <div class="field-label"><span>Mass ratio q=m&#8321;/m&#8322; <span style="opacity:.65">(mode content only)</span></span><output id="out-qonly">1.24</output></div>
+        <input type="range" id="in-qonly" min="1" max="10" step="0.05" value="1.24">
+      </div>
+    </div>
+
+    <div class="controls-grid" style="margin-top:20px;">
+      <div class="field">
+        <div class="field-label"><span>Inclination &iota; (to line of sight)</span><output id="out-inc">55&deg;</output></div>
+        <input type="range" id="in-inc" min="0" max="180" step="1" value="55">
+      </div>
+    </div>
+
+    <div class="readout-row">
+      <div class="readout"><span class="k">Remnant mass</span><span class="v mono" id="ro-mf">62.0 M&#9737;</span></div>
+      <div class="readout"><span class="k">Remnant spin</span><span class="v mono" id="ro-chif">0.674</span></div>
+      <div class="readout"><span class="k">Radiated energy</span><span class="v mono" id="ro-erad">4.9%</span></div>
+      <div class="readout"><span class="k">Mass asymmetry &delta;</span><span class="v mono" id="ro-delta">0.108</span></div>
+      <div class="readout"><span class="k">Symm. mass ratio &eta;</span><span class="v mono" id="ro-eta">0.247</span></div>
+    </div>
+    <p class="aux-note" id="progenitor-note">Remnant mass and spin from the aligned-spin Barausse&ndash;Morozova&ndash;Rezzolla (2012) / Hofmann&ndash;Barausse&ndash;Rezzolla (2016) fits &mdash; the same NR-calibrated formulas parameter-estimation codes use to map a progenitor onto a final Kerr black hole.</p>
+  </div>
+
+  <div class="panels">
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">The spectrum</h2>
+        <p class="panel-sub">Six quasinormal modes of the <em>same</em> remnant &mdash; same M<sub>f</sub>, same &chi;<sub>f</sub> &mdash; each with its own frequency and decay rate. In GR, moving any one point off its curve means moving them all.</p>
+      </div>
+
+      <div class="subblock-title">Frequency &amp; damping time</div>
+      <svg class="chart" id="svg-scatter" viewBox="0 0 560 300" preserveAspectRatio="xMidYMid meet"></svg>
+
+      <div class="subblock-title">Ringdown waveform, this vantage point</div>
+      <svg class="chart" id="svg-time" viewBox="0 0 560 200" preserveAspectRatio="xMidYMid meet"></svg>
+
+      <div class="legend" id="legend-modes"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">Mode content</h2>
+        <p class="panel-sub">How loudly each overtone rings, relative to the fundamental (2,2,0), seen from your chosen inclination.</p>
+      </div>
+      <svg class="chart" id="svg-bars" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="illus-flag">
+        <span class="tag">Illustrative</span>
+        <span>Bar heights follow the known selection rule &mdash; modes with odd l+m (here 2,1,0 and 3,2,0) vanish as m&#8321;&rarr;m&#8322; &mdash; but the normalization is schematic, not an NR-calibrated fit. Swap in exact coefficients (Kamaretsos+2012, London+2014, Cheung+2023) for publication numbers.</span>
+      </div>
+    </section>
+
+  </div>
+
+  <section class="panel panel-wide">
+    <div class="horizon-head">
+      <div class="panel-head" style="margin-bottom:0">
+        <h2 class="panel-title">The ringing horizon</h2>
+        <p class="panel-sub">The same six modes, drawn as a shape instead of a spectrum &mdash; the remnant's horizon settling down, mode by mode, at extreme slow motion.</p>
+      </div>
+      <div class="horizon-controls">
+        <button type="button" class="play-btn" id="horizon-toggle" aria-pressed="true">
+          <span class="icon" id="horizon-icon">&#10073;&#10073;</span><span id="horizon-toggle-label">Pause</span>
+        </button>
+      </div>
+    </div>
+    <div class="horizon-stage">
+      <canvas id="horizon-canvas" width="520" height="430" aria-label="Animated simulation of a deforming black hole horizon settling into a sphere"></canvas>
+    </div>
+    <p class="horizon-caption">Surface displacement = &sum; (mode amplitude, from the panel above) &times; exp(&minus;t/&tau;) cos(2&pi;ft) &times; that mode's real angular shape (associated Legendre functions). Exaggerated roughly 100&times; for visibility &mdash; a real horizon's ringdown distortion is a far smaller fraction of its radius.</p>
+  </section>
+
+  <footer>
+    <dl class="methods">
+      <li><dt>Frequencies &amp; damping times&nbsp;&mdash;&nbsp;</dt><dd>direct solutions of the Kerr QNM eigenvalue equation (Leaver 1985), not closed-form fits: computed with the <code class="mono">qnm</code> package (Stein 2019, following Leaver &amp; Cook&ndash;Zalutskiy) on a spin grid and interpolated in the browser.</dd></li>
+      <li><dt>Remnant mass &amp; spin&nbsp;&mdash;&nbsp;</dt><dd>Barausse, Morozova &amp; Rezzolla (2012) and Hofmann, Barausse &amp; Rezzolla (2016), aligned-spin limit.</dd></li>
+      <li><dt>Inclination projection&nbsp;&mdash;&nbsp;</dt><dd>exact spin-weight&minus;2 spherical harmonics, <sub>&minus;2</sub>Y<sub>lm</sub>(&iota;,0), Goldberg et al. (1967).</dd></li>
+      <li><dt>Mode amplitudes&nbsp;&mdash;&nbsp;</dt><dd>schematic mass-ratio trend only &mdash; see the note on the mode&#8209;content panel.</dd></li>
+    </dl>
+  </footer>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================================
+   1. QNM grid — Mω(a) for (l,m,n) ∈ {220,221,210,320,330,440}, a ∈ [0,0.9999]
+   Computed via the `qnm` package (exact Leaver-method solutions), decimated
+   to ~140 points/mode. Values verified against known Schwarzschild limits.
+   ========================================================================= */
+const QNM_GRID = {"220":{"a":[0.0,0.00993,0.01987,0.0298,0.03642,0.04635,0.05629,0.06622,0.07615,0.08609,0.09602,0.10264,0.11258,0.12251,0.13244,0.14237,0.15231,0.16224,0.17217,0.1788,0.18873,0.19866,0.2086,0.21853,0.22846,0.23839,0.24502,0.25495,0.26488,0.27482,0.28475,0.29468,0.30462,0.31124,0.32117,0.3311,0.34104,0.35097,0.3609,0.37084,0.38077,0.38739,0.39732,0.40726,0.41719,0.42712,0.43706,0.44699,0.45361,0.46355,0.47348,0.48341,0.49334,0.50328,0.51321,0.51983,0.52977,0.5397,0.54963,0.55957,0.5695,0.57943,0.58936,0.59599,0.60592,0.61585,0.62579,0.63572,0.64565,0.65559,0.66221,0.67214,0.68207,0.69201,0.70194,0.71187,0.72181,0.72843,0.73836,0.74829,0.75823,0.76816,0.77809,0.78803,0.79796,0.80458,0.81452,0.82445,0.83438,0.84431,0.85425,0.86418,0.8708,0.88074,0.89067,0.9006,0.91054,0.92047,0.9304,0.93702,0.94696,0.95689,0.96682,0.97676,0.98669,0.9902,0.9905,0.9907,0.991,0.9913,0.9916,0.9919,0.9922,0.9925,0.9927,0.993,0.9933,0.9936,0.9939,0.9942,0.9945,0.9947,0.995,0.9953,0.9956,0.9959,0.9962,0.9965,0.9968,0.997,0.9973,0.9976,0.9979,0.9982,0.9985,0.9988,0.999,0.9993,0.9996,0.9999],"re":[0.373672,0.374928,0.376199,0.377484,0.37835,0.379661,0.380987,0.382329,0.383688,0.385063,0.386455,0.387393,0.388814,0.390253,0.39171,0.393187,0.394682,0.396197,0.397733,0.398768,0.400338,0.401929,0.403543,0.405179,0.406838,0.408521,0.409656,0.41138,0.413129,0.414904,0.416706,0.418536,0.420393,0.421648,0.423555,0.425492,0.42746,0.42946,0.431494,0.433562,0.435666,0.437088,0.439252,0.441455,0.443698,0.445981,0.448306,0.450675,0.45228,0.454725,0.457218,0.459761,0.462355,0.465003,0.467705,0.469539,0.472339,0.4752,0.478126,0.481117,0.484179,0.487312,0.490521,0.492704,0.496047,0.499475,0.502992,0.506604,0.510313,0.514126,0.516729,0.520727,0.524845,0.529089,0.533466,0.537985,0.542654,0.545856,0.550798,0.555919,0.561232,0.566749,0.572488,0.578466,0.584702,0.589014,0.595733,0.602777,0.610179,0.617977,0.626215,0.634943,0.641066,0.650758,0.661139,0.672317,0.684426,0.697646,0.712212,0.722828,0.74044,0.760659,0.784529,0.81399,0.853534,0.872048,0.873809,0.875002,0.87682,0.878676,0.880571,0.882507,0.884487,0.886513,0.887891,0.89,0.892164,0.894386,0.89667,0.899022,0.901446,0.903105,0.905664,0.908313,0.911062,0.913922,0.916904,0.920024,0.9233,0.925581,0.92917,0.93299,0.937087,0.941522,0.946385,0.951813,0.955854,0.962838,0.97169,0.985674],"im":[-0.088962,-0.088942,-0.088921,-0.088898,-0.088882,-0.088858,-0.088833,-0.088806,-0.088778,-0.088749,-0.088718,-0.088697,-0.088664,-0.08863,-0.088595,-0.088558,-0.088519,-0.088479,-0.088437,-0.088408,-0.088364,-0.088318,-0.088269,-0.088219,-0.088167,-0.088113,-0.088076,-0.088019,-0.087959,-0.087897,-0.087833,-0.087766,-0.087697,-0.087649,-0.087575,-0.087499,-0.08742,-0.087337,-0.087252,-0.087163,-0.087071,-0.087007,-0.086909,-0.086807,-0.086701,-0.086591,-0.086477,-0.086358,-0.086276,-0.08615,-0.086018,-0.08588,-0.085738,-0.085589,-0.085434,-0.085328,-0.085162,-0.084989,-0.084809,-0.084621,-0.084425,-0.08422,-0.084005,-0.083857,-0.083626,-0.083385,-0.083132,-0.082866,-0.082588,-0.082296,-0.082093,-0.081775,-0.081441,-0.08109,-0.080719,-0.080327,-0.079914,-0.079625,-0.07917,-0.078688,-0.078176,-0.077632,-0.077052,-0.076433,-0.075771,-0.075304,-0.07456,-0.07376,-0.072897,-0.071963,-0.070949,-0.069845,-0.069051,-0.067765,-0.066345,-0.064769,-0.063007,-0.061019,-0.058754,-0.057054,-0.054145,-0.050671,-0.046393,-0.040855,-0.032992,-0.029147,-0.028777,-0.028525,-0.02814,-0.027746,-0.027343,-0.026931,-0.026508,-0.026073,-0.025777,-0.025323,-0.024856,-0.024375,-0.023878,-0.023366,-0.022836,-0.022473,-0.021911,-0.021327,-0.020719,-0.020084,-0.01942,-0.018722,-0.017987,-0.017474,-0.016663,-0.015796,-0.014863,-0.013847,-0.012727,-0.011471,-0.010531,-0.008896,-0.006807,-0.003469]},"221":{"a":[0.0,0.00993,0.01987,0.0298,0.03642,0.04635,0.05629,0.06622,0.07615,0.08609,0.09602,0.10264,0.11258,0.12251,0.13244,0.14237,0.15231,0.16224,0.17217,0.1788,0.18873,0.19866,0.2086,0.21853,0.22846,0.23839,0.24502,0.25495,0.26488,0.27482,0.28475,0.29468,0.30462,0.31124,0.32117,0.3311,0.34104,0.35097,0.3609,0.37084,0.38077,0.38739,0.39732,0.40726,0.41719,0.42712,0.43706,0.44699,0.45361,0.46355,0.47348,0.48341,0.49334,0.50328,0.51321,0.51983,0.52977,0.5397,0.54963,0.55957,0.5695,0.57943,0.58936,0.59599,0.60592,0.61585,0.62579,0.63572,0.64565,0.65559,0.66221,0.67214,0.68207,0.69201,0.70194,0.71187,0.72181,0.72843,0.73836,0.74829,0.75823,0.76816,0.77809,0.78803,0.79796,0.80458,0.81452,0.82445,0.83438,0.84431,0.85425,0.86418,0.8708,0.88074,0.89067,0.9006,0.91054,0.92047,0.9304,0.93702,0.94696,0.95689,0.96682,0.97676,0.98669,0.9902,0.9905,0.9907,0.991,0.9913,0.9916,0.9919,0.9922,0.9925,0.9927,0.993,0.9933,0.9936,0.9939,0.9942,0.9945,0.9947,0.995,0.9953,0.9956,0.9959,0.9962,0.9965,0.9968,0.997,0.9973,0.9976,0.9979,0.9982,0.9985,0.9988,0.999,0.9993,0.9996,0.9999],"re":[0.346711,0.348148,0.3496,0.351067,0.352054,0.353548,0.355059,0.356586,0.35813,0.359692,0.361272,0.362335,0.363945,0.365574,0.367222,0.36889,0.370577,0.372286,0.374015,0.37518,0.376946,0.378734,0.380545,0.382379,0.384238,0.386121,0.38739,0.389316,0.391268,0.393247,0.395253,0.397289,0.399353,0.400746,0.402862,0.405009,0.407188,0.4094,0.411648,0.41393,0.416249,0.417816,0.420198,0.42262,0.425083,0.427588,0.430137,0.432731,0.434487,0.437159,0.439882,0.442655,0.445482,0.448364,0.451304,0.453296,0.456336,0.459439,0.462609,0.465847,0.469158,0.472543,0.476007,0.478362,0.481964,0.485655,0.489438,0.493319,0.497302,0.501393,0.504182,0.508465,0.512872,0.517409,0.522085,0.526908,0.531888,0.535299,0.540561,0.546009,0.551654,0.557512,0.563599,0.569932,0.576532,0.581091,0.588187,0.595617,0.603414,0.611616,0.620265,0.629414,0.635821,0.645946,0.656766,0.668387,0.680943,0.69461,0.709621,0.72053,0.738573,0.759208,0.783471,0.813299,0.85318,0.871807,0.873577,0.874776,0.876604,0.878469,0.880374,0.882319,0.884308,0.886343,0.887727,0.889846,0.892018,0.894249,0.896543,0.898903,0.901336,0.903001,0.905568,0.908226,0.910984,0.913851,0.916841,0.919969,0.923252,0.925538,0.929134,0.932961,0.937063,0.941503,0.946371,0.951804,0.955833,0.962825,0.971683,0.985673],"im":[-0.273915,-0.273786,-0.273654,-0.273519,-0.273426,-0.273285,-0.273139,-0.27299,-0.272837,-0.27268,-0.272518,-0.272408,-0.272239,-0.272066,-0.271888,-0.271706,-0.271518,-0.271326,-0.271128,-0.270993,-0.270787,-0.270575,-0.270357,-0.270133,-0.269903,-0.269667,-0.269506,-0.269259,-0.269005,-0.268744,-0.268475,-0.268199,-0.267916,-0.267722,-0.267425,-0.267119,-0.266804,-0.26648,-0.266146,-0.265803,-0.265449,-0.265207,-0.264836,-0.264452,-0.264057,-0.263649,-0.263229,-0.262795,-0.262498,-0.26204,-0.261567,-0.261078,-0.260573,-0.26005,-0.259509,-0.259138,-0.258564,-0.25797,-0.257354,-0.256715,-0.256051,-0.255362,-0.254646,-0.254152,-0.253387,-0.25259,-0.25176,-0.250893,-0.249989,-0.249043,-0.248389,-0.24737,-0.246301,-0.245181,-0.244004,-0.242766,-0.241463,-0.240555,-0.239131,-0.237625,-0.23603,-0.234339,-0.232541,-0.230628,-0.228585,-0.227146,-0.224859,-0.222402,-0.219755,-0.216895,-0.213795,-0.210419,-0.207998,-0.204072,-0.199745,-0.194946,-0.189585,-0.183545,-0.176667,-0.171511,-0.162699,-0.152196,-0.139283,-0.122606,-0.098984,-0.087446,-0.086334,-0.085578,-0.084424,-0.083243,-0.082035,-0.080797,-0.079527,-0.078225,-0.077337,-0.075974,-0.074573,-0.073129,-0.071641,-0.070104,-0.068515,-0.067425,-0.065738,-0.063986,-0.062162,-0.060258,-0.058266,-0.056173,-0.053968,-0.052426,-0.049993,-0.047393,-0.044591,-0.041543,-0.038184,-0.034413,-0.052656,-0.044481,-0.034035,-0.017344]},"210":{"a":[0.0,0.00993,0.01987,0.0298,0.03642,0.04635,0.05629,0.06622,0.07615,0.08609,0.09602,0.10264,0.11258,0.12251,0.13244,0.14237,0.15231,0.16224,0.17217,0.1788,0.18873,0.19866,0.2086,0.21853,0.22846,0.23839,0.24502,0.25495,0.26488,0.27482,0.28475,0.29468,0.30462,0.31124,0.32117,0.3311,0.34104,0.35097,0.3609,0.37084,0.38077,0.38739,0.39732,0.40726,0.41719,0.42712,0.43706,0.44699,0.45361,0.46355,0.47348,0.48341,0.49334,0.50328,0.51321,0.51983,0.52977,0.5397,0.54963,0.55957,0.5695,0.57943,0.58936,0.59599,0.60592,0.61585,0.62579,0.63572,0.64565,0.65559,0.66221,0.67214,0.68207,0.69201,0.70194,0.71187,0.72181,0.72843,0.73836,0.74829,0.75823,0.76816,0.77809,0.78803,0.79796,0.80458,0.81452,0.82445,0.83438,0.84431,0.85425,0.86418,0.8708,0.88074,0.89067,0.9006,0.91054,0.92047,0.9304,0.93702,0.94696,0.95689,0.96682,0.97676,0.98669,0.9902,0.9905,0.9907,0.991,0.9913,0.9916,0.9919,0.9922,0.9925,0.9927,0.993,0.9933,0.9936,0.9939,0.9942,0.9945,0.9947,0.995,0.9953,0.9956,0.9959,0.9962,0.9965,0.9968,0.997,0.9973,0.9976,0.9979,0.9982,0.9985,0.9988,0.999,0.9993,0.9996,0.9999],"re":[0.373672,0.374301,0.374939,0.375586,0.376023,0.376685,0.377357,0.378039,0.378731,0.379432,0.380144,0.380624,0.381353,0.382093,0.382843,0.383605,0.384377,0.385161,0.385956,0.386493,0.387308,0.388135,0.388975,0.389828,0.390693,0.391571,0.392164,0.393065,0.39398,0.394909,0.395853,0.396811,0.397785,0.398442,0.399442,0.400458,0.40149,0.402539,0.403605,0.404689,0.405792,0.406537,0.40767,0.408824,0.409997,0.41119,0.412405,0.413641,0.414478,0.415751,0.417049,0.41837,0.419716,0.421088,0.422486,0.423433,0.424877,0.42635,0.427853,0.429386,0.430951,0.432549,0.434181,0.435289,0.436981,0.438711,0.440481,0.442291,0.444144,0.446041,0.447331,0.449307,0.451332,0.45341,0.455542,0.457732,0.459983,0.461518,0.463876,0.466303,0.468804,0.471383,0.474044,0.476793,0.479635,0.481585,0.484597,0.487722,0.490967,0.494342,0.497859,0.50153,0.504069,0.508029,0.512187,0.516563,0.521185,0.526083,0.531295,0.534966,0.540812,0.547126,0.553996,0.561531,0.569826,0.572927,0.573194,0.573373,0.573641,0.573909,0.574177,0.574446,0.574714,0.574983,0.575162,0.57543,0.575698,0.575965,0.576233,0.576499,0.576766,0.576943,0.577208,0.577472,0.577735,0.577997,0.578258,0.578518,0.578777,0.578948,0.579204,0.579459,0.579711,0.579963,0.580212,0.58046,0.580624,0.580869,0.581112,0.581353],"im":[-0.088962,-0.088952,-0.08894,-0.088927,-0.088918,-0.088903,-0.088886,-0.088869,-0.08885,-0.088829,-0.088807,-0.088792,-0.088768,-0.088742,-0.088715,-0.088687,-0.088656,-0.088625,-0.088591,-0.088568,-0.088532,-0.088494,-0.088454,-0.088412,-0.088369,-0.088324,-0.088292,-0.088243,-0.088193,-0.08814,-0.088084,-0.088027,-0.087967,-0.087926,-0.087862,-0.087796,-0.087726,-0.087655,-0.08758,-0.087503,-0.087422,-0.087367,-0.087281,-0.087192,-0.087099,-0.087003,-0.086903,-0.086799,-0.086728,-0.086617,-0.086502,-0.086383,-0.086259,-0.08613,-0.085996,-0.085903,-0.08576,-0.085611,-0.085456,-0.085295,-0.085126,-0.084951,-0.084768,-0.084642,-0.084446,-0.084242,-0.084028,-0.083805,-0.083572,-0.083328,-0.083159,-0.082895,-0.082619,-0.082329,-0.082025,-0.081705,-0.081368,-0.081133,-0.080766,-0.080378,-0.079968,-0.079534,-0.079074,-0.078586,-0.078066,-0.0777,-0.077122,-0.076502,-0.075837,-0.075122,-0.07435,-0.073514,-0.072917,-0.071953,-0.070896,-0.06973,-0.068437,-0.066989,-0.065353,-0.064135,-0.062072,-0.059645,-0.056719,-0.053061,-0.048225,-0.046078,-0.045881,-0.045748,-0.045546,-0.045342,-0.045136,-0.044927,-0.044715,-0.044501,-0.044356,-0.044137,-0.043916,-0.043691,-0.043464,-0.043234,-0.043001,-0.042844,-0.042607,-0.042366,-0.042123,-0.041877,-0.041628,-0.041376,-0.041121,-0.04095,-0.040691,-0.04043,-0.040166,-0.0399,-0.039631,-0.03936,-0.039179,-0.038904,-0.038628,-0.038349]},"320":{"a":[0.0,0.00993,0.01987,0.0298,0.03642,0.04635,0.05629,0.06622,0.07615,0.08609,0.09602,0.10264,0.11258,0.12251,0.13244,0.14237,0.15231,0.16224,0.17217,0.1788,0.18873,0.19866,0.2086,0.21853,0.22846,0.23839,0.24502,0.25495,0.26488,0.27482,0.28475,0.29468,0.30462,0.31124,0.32117,0.3311,0.34104,0.35097,0.3609,0.37084,0.38077,0.38739,0.39732,0.40726,0.41719,0.42712,0.43706,0.44699,0.45361,0.46355,0.47348,0.48341,0.49334,0.50328,0.51321,0.51983,0.52977,0.5397,0.54963,0.55957,0.5695,0.57943,0.58936,0.59599,0.60592,0.61585,0.62579,0.63572,0.64565,0.65559,0.66221,0.67214,0.68207,0.69201,0.70194,0.71187,0.72181,0.72843,0.73836,0.74829,0.75823,0.76816,0.77809,0.78803,0.79796,0.80458,0.81452,0.82445,0.83438,0.84431,0.85425,0.86418,0.8708,0.88074,0.89067,0.9006,0.91054,0.92047,0.9304,0.93702,0.94696,0.95689,0.96682,0.97676,0.98669,0.9902,0.9905,0.9907,0.991,0.9913,0.9916,0.9919,0.9922,0.9925,0.9927,0.993,0.9933,0.9936,0.9939,0.9942,0.9945,0.9947,0.995,0.9953,0.9956,0.9959,0.9962,0.9965,0.9968,0.997,0.9973,0.9976,0.9979,0.9982,0.9985,0.9988,0.999,0.9993,0.9996,0.9999],"re":[0.599443,0.600789,0.602149,0.603524,0.60445,0.605851,0.607268,0.608701,0.610151,0.611617,0.613101,0.614099,0.615612,0.617142,0.618691,0.620258,0.621845,0.623451,0.625076,0.626171,0.62783,0.629511,0.631212,0.632936,0.634681,0.63645,0.637642,0.639449,0.641281,0.643137,0.645019,0.646926,0.64886,0.650164,0.652144,0.654152,0.656189,0.658255,0.660352,0.662481,0.664641,0.6661,0.668316,0.670566,0.672852,0.675175,0.677535,0.679934,0.681555,0.684021,0.686529,0.68908,0.691676,0.694317,0.697007,0.698827,0.701599,0.704423,0.707302,0.710236,0.713228,0.71628,0.719395,0.721507,0.724732,0.728025,0.731391,0.734833,0.738353,0.741955,0.744404,0.748152,0.751993,0.755931,0.759972,0.764121,0.768384,0.771292,0.775759,0.780358,0.785098,0.789986,0.795034,0.800251,0.80565,0.809357,0.815091,0.821046,0.827243,0.833701,0.840447,0.847508,0.852408,0.860073,0.868157,0.876716,0.885816,0.89554,0.905996,0.913442,0.925458,0.938718,0.953592,0.97069,0.991173,0.999646,1.000411,1.000924,1.001701,1.002484,1.003276,1.004075,1.004882,1.005698,1.006246,1.007076,1.007914,1.008762,1.009619,1.010486,1.011362,1.011952,1.012845,1.013749,1.014663,1.015588,1.016523,1.01747,1.018427,1.01907,1.020044,1.021026,1.022014,1.023006,1.023996,1.024978,1.025621,1.026559,1.027449,1.028285],"im":[-0.092703,-0.092689,-0.092674,-0.092658,-0.092646,-0.092628,-0.092607,-0.092585,-0.092562,-0.092537,-0.092511,-0.092492,-0.092463,-0.092432,-0.092399,-0.092364,-0.092327,-0.092289,-0.092249,-0.09222,-0.092177,-0.092131,-0.092082,-0.092032,-0.091979,-0.091924,-0.091886,-0.091827,-0.091765,-0.091701,-0.091633,-0.091563,-0.091491,-0.09144,-0.091362,-0.091281,-0.091196,-0.091109,-0.091017,-0.090922,-0.090823,-0.090755,-0.090649,-0.09054,-0.090426,-0.090307,-0.090184,-0.090056,-0.089967,-0.089831,-0.089688,-0.089541,-0.089387,-0.089227,-0.08906,-0.088946,-0.088768,-0.088583,-0.08839,-0.088189,-0.08798,-0.087762,-0.087534,-0.087377,-0.087133,-0.086878,-0.086612,-0.086334,-0.086043,-0.085739,-0.085528,-0.0852,-0.084855,-0.084494,-0.084114,-0.083715,-0.083295,-0.083003,-0.082545,-0.082062,-0.081552,-0.081011,-0.080439,-0.079831,-0.079184,-0.078729,-0.078009,-0.077239,-0.076413,-0.075524,-0.074564,-0.073524,-0.072781,-0.071582,-0.070266,-0.068812,-0.067196,-0.065382,-0.063325,-0.061786,-0.059163,-0.056043,-0.052212,-0.047272,-0.040298,-0.036917,-0.036592,-0.036372,-0.036036,-0.035693,-0.035342,-0.034982,-0.034615,-0.034238,-0.033982,-0.033589,-0.033186,-0.032771,-0.032345,-0.031906,-0.031454,-0.031145,-0.030668,-0.030175,-0.029664,-0.029133,-0.028582,-0.028008,-0.027408,-0.026993,-0.026345,-0.025663,-0.024944,-0.024182,-0.023373,-0.02251,-0.021904,-0.020948,-0.019946,-0.018918]},"330":{"a":[0.0,0.00993,0.01987,0.0298,0.03642,0.04635,0.05629,0.06622,0.07615,0.08609,0.09602,0.10264,0.11258,0.12251,0.13244,0.14237,0.15231,0.16224,0.17217,0.1788,0.18873,0.19866,0.2086,0.21853,0.22846,0.23839,0.24502,0.25495,0.26488,0.27482,0.28475,0.29468,0.30462,0.31124,0.32117,0.3311,0.34104,0.35097,0.3609,0.37084,0.38077,0.38739,0.39732,0.40726,0.41719,0.42712,0.43706,0.44699,0.45361,0.46355,0.47348,0.48341,0.49334,0.50328,0.51321,0.51983,0.52977,0.5397,0.54963,0.55957,0.5695,0.57943,0.58936,0.59599,0.60592,0.61585,0.62579,0.63572,0.64565,0.65559,0.66221,0.67214,0.68207,0.69201,0.70194,0.71187,0.72181,0.72843,0.73836,0.74829,0.75823,0.76816,0.77809,0.78803,0.79796,0.80458,0.81452,0.82445,0.83438,0.84431,0.85425,0.86418,0.8708,0.88074,0.89067,0.9006,0.91054,0.92047,0.9304,0.93702,0.94696,0.95689,0.96682,0.97676,0.98669,0.9902,0.9905,0.9907,0.991,0.9913,0.9916,0.9919,0.9922,0.9925,0.9927,0.993,0.9933,0.9936,0.9939,0.9942,0.9945,0.9947,0.995,0.9953,0.9956,0.9959,0.9962,0.9965,0.9968,0.997,0.9973,0.9976,0.9979,0.9982,0.9985,0.9988,0.999,0.9993,0.9996,0.9999],"re":[0.599443,0.601461,0.6035,0.605562,0.606948,0.609047,0.611169,0.613315,0.615485,0.617679,0.619899,0.621393,0.623656,0.625945,0.628262,0.630606,0.632979,0.63538,0.637812,0.63945,0.641932,0.644446,0.646992,0.649572,0.652185,0.654833,0.656618,0.659326,0.66207,0.664853,0.667675,0.670537,0.67344,0.675399,0.678373,0.681391,0.684455,0.687565,0.690724,0.693932,0.697191,0.699392,0.702739,0.706142,0.709601,0.713119,0.716697,0.720339,0.722802,0.726552,0.730371,0.73426,0.738223,0.742262,0.74638,0.749171,0.753427,0.75777,0.762203,0.766731,0.771358,0.776086,0.780922,0.784207,0.789231,0.794375,0.799645,0.805047,0.810587,0.816272,0.820147,0.826092,0.832204,0.838492,0.844966,0.851639,0.858521,0.863233,0.870495,0.878007,0.885784,0.893847,0.902217,0.910917,0.919977,0.926231,0.935959,0.946137,0.956811,0.968032,0.97986,0.992368,1.001124,1.014962,1.029749,1.045634,1.062804,1.081503,1.102054,1.117001,1.141738,1.170056,1.203379,1.244359,1.299124,1.324677,1.327104,1.328748,1.331255,1.333812,1.336422,1.339089,1.341815,1.344605,1.346501,1.349404,1.352382,1.355439,1.358581,1.361815,1.365147,1.367428,1.370944,1.374584,1.378361,1.382287,1.386381,1.390663,1.395157,1.398286,1.403208,1.408444,1.414058,1.420133,1.426791,1.43422,1.439748,1.449296,1.46139,1.480473],"im":[-0.092703,-0.092683,-0.092661,-0.092638,-0.092622,-0.092597,-0.09257,-0.092541,-0.09251,-0.092478,-0.092445,-0.092421,-0.092384,-0.092345,-0.092305,-0.092262,-0.092218,-0.092171,-0.092122,-0.092088,-0.092035,-0.09198,-0.091923,-0.091863,-0.0918,-0.091735,-0.09169,-0.09162,-0.091548,-0.091472,-0.091394,-0.091312,-0.091227,-0.091168,-0.091077,-0.090983,-0.090885,-0.090783,-0.090677,-0.090567,-0.090452,-0.090373,-0.090252,-0.090125,-0.089993,-0.089857,-0.089715,-0.089567,-0.089466,-0.089308,-0.089145,-0.088975,-0.088798,-0.088615,-0.088424,-0.088292,-0.088088,-0.087876,-0.087655,-0.087425,-0.087186,-0.086936,-0.086676,-0.086496,-0.086217,-0.085926,-0.085622,-0.085304,-0.084971,-0.084624,-0.084383,-0.084008,-0.083615,-0.083202,-0.082769,-0.082314,-0.081836,-0.081503,-0.080981,-0.08043,-0.079849,-0.079233,-0.078581,-0.077889,-0.077152,-0.076635,-0.075816,-0.074939,-0.073999,-0.072988,-0.071896,-0.070714,-0.069869,-0.068505,-0.067009,-0.065358,-0.063522,-0.061462,-0.059126,-0.05738,-0.054404,-0.050866,-0.046526,-0.04093,-0.033018,-0.029159,-0.028787,-0.028535,-0.028149,-0.027754,-0.027351,-0.026937,-0.026513,-0.026078,-0.025781,-0.025327,-0.024859,-0.024377,-0.02388,-0.023367,-0.022837,-0.022473,-0.021911,-0.021326,-0.020718,-0.020083,-0.019419,-0.018721,-0.017986,-0.017473,-0.016662,-0.015795,-0.014862,-0.013846,-0.012727,-0.01147,-0.01053,-0.008896,-0.006807,-0.003469]},"440":{"a":[0.0,0.00993,0.01987,0.0298,0.03642,0.04635,0.05629,0.06622,0.07615,0.08609,0.09602,0.10264,0.11258,0.12251,0.13244,0.14237,0.15231,0.16224,0.17217,0.1788,0.18873,0.19866,0.2086,0.21853,0.22846,0.23839,0.24502,0.25495,0.26488,0.27482,0.28475,0.29468,0.30462,0.31124,0.32117,0.3311,0.34104,0.35097,0.3609,0.37084,0.38077,0.38739,0.39732,0.40726,0.41719,0.42712,0.43706,0.44699,0.45361,0.46355,0.47348,0.48341,0.49334,0.50328,0.51321,0.51983,0.52977,0.5397,0.54963,0.55957,0.5695,0.57943,0.58936,0.59599,0.60592,0.61585,0.62579,0.63572,0.64565,0.65559,0.66221,0.67214,0.68207,0.69201,0.70194,0.71187,0.72181,0.72843,0.73836,0.74829,0.75823,0.76816,0.77809,0.78803,0.79796,0.80458,0.81452,0.82445,0.83438,0.84431,0.85425,0.86418,0.8708,0.88074,0.89067,0.9006,0.91054,0.92047,0.9304,0.93702,0.94696,0.95689,0.96682,0.97676,0.98669,0.9902,0.9905,0.9907,0.991,0.9913,0.9916,0.9919,0.9922,0.9925,0.9927,0.993,0.9933,0.9936,0.9939,0.9942,0.9945,0.9947,0.995,0.9953,0.9956,0.9959,0.9962,0.9965,0.9968,0.997,0.9973,0.9976,0.9979,0.9982,0.9985,0.9988,0.999,0.9993,0.9996,0.9999],"re":[0.809178,0.811967,0.814784,0.817632,0.819547,0.822446,0.825376,0.828338,0.831333,0.834361,0.837424,0.839484,0.842605,0.845762,0.848956,0.852187,0.855456,0.858765,0.862114,0.86437,0.867788,0.871249,0.874753,0.878302,0.881896,0.885538,0.887992,0.891714,0.895486,0.89931,0.903185,0.907115,0.9111,0.913788,0.917869,0.922009,0.92621,0.930473,0.934801,0.939196,0.943659,0.946673,0.951254,0.955909,0.96064,0.965449,0.97034,0.975314,0.978678,0.983798,0.98901,0.994315,0.999719,1.005224,1.010834,1.014634,1.020427,1.026337,1.032367,1.038522,1.044807,1.051228,1.057791,1.062248,1.06906,1.076031,1.083169,1.09048,1.097975,1.105661,1.110896,1.118925,1.127172,1.135652,1.144378,1.153363,1.162624,1.168959,1.178718,1.188803,1.199236,1.210043,1.221251,1.232891,1.244999,1.25335,1.266329,1.279894,1.294104,1.309024,1.324732,1.34132,1.352922,1.371233,1.390773,1.411731,1.434347,1.458935,1.485909,1.505495,1.537854,1.574812,1.618193,1.671386,1.742226,1.77519,1.778319,1.780438,1.783667,1.786962,1.790324,1.793759,1.797269,1.80086,1.803302,1.807038,1.81087,1.814803,1.818844,1.823003,1.827288,1.83022,1.83474,1.839418,1.84427,1.849314,1.854571,1.860068,1.865837,1.869853,1.876167,1.882884,1.890081,1.897868,1.9064,1.915915,1.922993,1.935212,1.950681,1.97507],"im":[-0.094164,-0.09415,-0.094134,-0.094117,-0.094104,-0.094085,-0.094063,-0.09404,-0.094015,-0.093988,-0.09396,-0.09394,-0.093908,-0.093874,-0.093839,-0.093801,-0.093761,-0.093719,-0.093675,-0.093644,-0.093595,-0.093544,-0.093491,-0.093435,-0.093376,-0.093315,-0.093272,-0.093206,-0.093136,-0.093064,-0.092988,-0.092909,-0.092826,-0.092769,-0.09268,-0.092588,-0.092491,-0.092391,-0.092286,-0.092176,-0.092063,-0.091984,-0.091862,-0.091736,-0.091603,-0.091466,-0.091323,-0.091174,-0.091071,-0.090912,-0.090746,-0.090573,-0.090393,-0.090205,-0.09001,-0.089875,-0.089666,-0.089448,-0.089221,-0.088984,-0.088737,-0.088479,-0.08821,-0.088025,-0.087736,-0.087434,-0.087118,-0.086788,-0.086443,-0.086082,-0.085831,-0.085441,-0.085031,-0.084602,-0.08415,-0.083676,-0.083177,-0.082829,-0.082284,-0.08171,-0.081102,-0.08046,-0.079779,-0.079057,-0.078289,-0.07775,-0.076896,-0.075983,-0.075004,-0.073952,-0.072818,-0.071591,-0.070714,-0.069301,-0.067753,-0.066048,-0.064154,-0.062034,-0.059635,-0.057845,-0.0548,-0.051191,-0.046777,-0.041105,-0.033115,-0.029229,-0.028855,-0.028601,-0.028213,-0.027817,-0.02741,-0.026995,-0.026568,-0.026131,-0.025833,-0.025376,-0.024906,-0.024422,-0.023923,-0.023408,-0.022875,-0.02251,-0.021945,-0.021359,-0.020748,-0.020111,-0.019445,-0.018745,-0.018008,-0.017493,-0.01668,-0.015811,-0.014875,-0.013858,-0.012736,-0.011478,-0.010536,-0.0089,-0.006809,-0.003469]}};
+
+const MODES = [
+  { key:"220", l:2,m:2,n:0, label:"(2,2,0)", tag:"fundamental" },
+  { key:"221", l:2,m:2,n:1, label:"(2,2,1)", tag:"overtone" },
+  { key:"210", l:2,m:1,n:0, label:"(2,1,0)", tag:"subdominant" },
+  { key:"320", l:3,m:2,n:0, label:"(3,2,0)", tag:"subdominant" },
+  { key:"330", l:3,m:3,n:0, label:"(3,3,0)", tag:"subdominant" },
+  { key:"440", l:4,m:4,n:0, label:"(4,4,0)", tag:"subdominant" },
+];
+
+const MTSUN = 4.925491025543576e-6; // GM_sun/c^3, seconds
+
+function interp1(xs, ys, x){
+  const n = xs.length;
+  if (x <= xs[0]) return ys[0];
+  if (x >= xs[n-1]) return ys[n-1];
+  let lo=0, hi=n-1;
+  while (hi-lo>1){ const mid=(lo+hi)>>1; if (xs[mid]<=x) lo=mid; else hi=mid; }
+  const t=(x-xs[lo])/(xs[hi]-xs[lo]);
+  return ys[lo]+t*(ys[hi]-ys[lo]);
+}
+
+function qnmFreqDamping(modeKey, Mf_msun, chif){
+  const g = QNM_GRID[modeKey];
+  const a = Math.min(Math.max(chif,0), 0.9999);
+  const reOm = interp1(g.a, g.re, a);
+  const imOm = interp1(g.a, g.im, a);
+  const Msec = Mf_msun * MTSUN;
+  const f_Hz = reOm/(2*Math.PI*Msec);
+  const tau_ms = (Msec/Math.abs(imOm))*1e3;
+  const Q = reOm/(2*Math.abs(imOm));
+  return { f_Hz, tau_ms, Q };
+}
+
+/* =========================================================================
+   2. Remnant mass & spin from an aligned-spin progenitor.
+   Barausse–Morozova–Rezzolla 2012 (mass) + Hofmann–Barausse–Rezzolla 2016,
+   "HBR16_34" (spin), restricted to spins aligned/anti-aligned with L — the
+   aligned limit collapses every angle-dependent term to plain signed z-spins.
+   Verified line-for-line against the `precession` package (Gerosa et al.)
+   to double precision across a spin/mass-ratio grid.
+   ========================================================================= */
+function remnantFromProgenitor(m1, m2, chi1z, chi2z){
+  // enforce m1 = heavier, matching the fits' convention; carry spins along
+  let a1=chi1z, a2=chi2z;
+  if (m2 > m1){ [m1,m2]=[m2,m1]; [a1,a2]=[a2,a1]; }
+  const qq = m2/m1; // 0<qq<=1
+  const eta = qq/Math.pow(1+qq,2);
+  const atot = (a1 + a2*qq*qq)/Math.pow(1+qq,2);
+  const chit = atot;
+
+  const p0=0.04827, p1=0.01707;
+  const Z1 = 1+Math.cbrt(1-chit*chit)*(Math.cbrt(1+chit)+Math.cbrt(1-chit));
+  const Z2 = Math.sqrt(3*chit*chit+Z1*Z1);
+  const risco = 3+Z2-Math.sign(chit||1)*Math.sqrt((3-Z1)*(3+Z1+2*Z2));
+  const Eisco = Math.sqrt(1-2/(3*risco));
+  const Erad = eta*(1-Eisco)+4*eta*eta*(4*p0+16*p1*chit*(chit+1)+Eisco-1);
+  const Mfin = (m1+m2)*(1-Erad);
+
+  const kfit = [
+    [NaN, 3.39221, 4.48865, -5.77101, -13.0459],
+    [35.1278, -72.9336, -86.0036, 93.7371, 200.975],
+    [-146.822, 387.184, 447.009, -467.383, -884.339],
+    [223.911, -648.502, -697.177, 753.738, 1166.89]
+  ];
+  const xifit = 0.474046;
+  kfit[0][0] = 16*(0.68646 - (kfit[1][0]/64 + kfit[2][0]/256 + kfit[3][0]/1024) - Math.sqrt(3)/2);
+
+  const aeff = atot + xifit*eta*(a1+a2);
+  const Z1e = 1+Math.cbrt(1-aeff*aeff)*(Math.cbrt(1+aeff)+Math.cbrt(1-aeff));
+  const Z2e = Math.sqrt(3*aeff*aeff+Z1e*Z1e);
+  const riscoe = 3+Z2e-Math.sign(aeff||1)*Math.sqrt((3-Z1e)*(3+Z1e+2*Z2e));
+  const Eiscoe = Math.sqrt(1-2/(3*riscoe));
+  const Liscoe = (2/(3*Math.sqrt(3)))*(1+2*Math.sqrt(3*riscoe-2));
+
+  let sumell=0;
+  for (let n=1;n<=4;n++) for (let m=0;m<=4;m++) sumell += kfit[n-1][m]*Math.pow(eta,n)*Math.pow(aeff,m);
+  const ell = Math.abs(Liscoe - 2*atot*(Eiscoe-1) + sumell);
+  let chifin = (1/Math.pow(1+qq,2))*Math.sqrt(a1*a1+a2*a2*Math.pow(qq,4)+2*a1*a2*qq*qq
+      + 2*(a1+a2*qq*qq)*ell*qq + Math.pow(ell*qq,2));
+  chifin = Math.min(chifin,0.9999);
+
+  return { Mf: Mfin, chif: Math.max(chifin,0), Erad, delta: Math.abs(m1-m2)/(m1+m2), eta };
+}
+
+/* =========================================================================
+   3. Spin-weighted spherical harmonics, s=-2, φ=0 (Goldberg et al. 1967).
+   Verified to double precision against the SXS `spherical` package.
+   ========================================================================= */
+function factorial(n){ let r=1; for(let i=2;i<=n;i++) r*=i; return r; }
+function comb(n,k){ if (k<0||k>n) return 0; return factorial(n)/(factorial(k)*factorial(n-k)); }
+function swsh(s,l,m,theta){
+  if (l<Math.abs(s) || l<Math.abs(m)) return 0;
+  const pref = ((m%2===0)?1:-1) * Math.sqrt(
+    factorial(l+m)*factorial(l-m)*(2*l+1) / (4*Math.PI*factorial(l+s)*factorial(l-s)) );
+  const ct2=Math.cos(theta/2), st2=Math.sin(theta/2);
+  let total=0;
+  const rmin=Math.max(0,m-s), rmax=Math.min(l-s,l+m);
+  for (let r=rmin;r<=rmax;r++){
+    const term = comb(l-s,r)*comb(l+s,r+s-m)*(((l-r-s)%2===0)?1:-1);
+    const pc=2*r+s-m, ps=2*l-2*r-s+m;
+    if (pc<0||ps<0) continue;
+    total += term*Math.pow(ct2,pc)*Math.pow(st2,ps);
+  }
+  return pref*total;
+}
+const Y22_FACE_ON = swsh(-2,2,2,0); // sqrt(5/4pi), the normalization reference
+
+/* =========================================================================
+   4. Illustrative intrinsic mode-amplitude model (mass-ratio trend only).
+   Encodes the real, rigorous selection rule — modes with odd l+m are
+   antisymmetric under 1↔2 exchange and vanish at equal mass — with a
+   schematic O(1) normalization. NOT a calibrated NR fit; see panel note.
+   ========================================================================= */
+function intrinsicAmplitude(modeKey, delta){
+  switch(modeKey){
+    case "220": return 1.00;
+    case "221": return 0.50;
+    case "210": return 0.55*delta;
+    case "320": return 0.42*delta;
+    case "330": return 0.28 + 0.17*delta;
+    case "440": return 0.10 + 0.09*delta;
+    default: return 0;
+  }
+}
+function observedAmplitude(modeKey, l, m, delta, iotaRad){
+  const intrinsic = intrinsicAmplitude(modeKey, delta);
+  const proj = Math.abs(swsh(-2,l,m,iotaRad)) / Y22_FACE_ON;
+  return intrinsic*proj;
+}
+
+/* =========================================================================
+   4b. Real spherical harmonics, for the horizon-shape simulation.
+   plgndr() is the standard stable upward recursion for the associated
+   Legendre functions P_l^m(x) (Condon–Shortley phase), verified to double
+   precision against scipy.special.lpmv for every (l,m) used here. The real
+   angular shape P_l^m(cosθ)·cos(mφ) is the textbook real-spherical-harmonic
+   pattern; it's normalized per-mode below by its own numeric max, so no
+   external normalization constant needs to be trusted.
+   ========================================================================= */
+function plgndr(l,m,x){
+  let pmm=1.0;
+  if (m>0){
+    const somx2=Math.sqrt((1-x)*(1+x));
+    let fact=1.0;
+    for (let i=1;i<=m;i++){ pmm*=-fact*somx2; fact+=2.0; }
+  }
+  if (l===m) return pmm;
+  let pmmp1 = x*(2*m+1)*pmm;
+  if (l===m+1) return pmmp1;
+  let pll=0.0;
+  for (let ll=m+2; ll<=l; ll++){
+    pll = (x*(2*ll-1)*pmmp1 - (ll+m-1)*pmm)/(ll-m);
+    pmm = pmmp1; pmmp1 = pll;
+  }
+  return pll;
+}
+function realShape(l,m,theta,phi){
+  return plgndr(l,m,Math.cos(theta))*Math.cos(m*phi);
+}
+
+/* =========================================================================
+   5. State + UI wiring
+   ========================================================================= */
+const $ = (id)=>document.getElementById(id);
+let mode = "progenitor"; // or "remnant"
+
+const els = {
+  btnProg: $("btn-progenitor"), btnRem: $("btn-remnant"),
+  panelProg: $("panel-progenitor"), panelRem: $("panel-remnant"),
+  m1: $("in-m1"), m2: $("in-m2"), chi1: $("in-chi1"), chi2: $("in-chi2"),
+  mf: $("in-mf"), chif: $("in-chif"), qonly: $("in-qonly"),
+  inc: $("in-inc"),
+  outM1: $("out-m1"), outM2: $("out-m2"), outChi1: $("out-chi1"), outChi2: $("out-chi2"),
+  outMf: $("out-mf"), outChif: $("out-chif"), outQonly: $("out-qonly"), outInc: $("out-inc"),
+  roMf: $("ro-mf"), roChif: $("ro-chif"), roErad: $("ro-erad"), roDelta: $("ro-delta"), roEta: $("ro-eta"),
+  progNote: $("progenitor-note"),
+};
+
+els.btnProg.addEventListener("click", ()=>setMode("progenitor"));
+els.btnRem.addEventListener("click", ()=>setMode("remnant"));
+function setMode(m){
+  mode = m;
+  const isProg = mode==="progenitor";
+  els.btnProg.classList.toggle("active", isProg);
+  els.btnRem.classList.toggle("active", !isProg);
+  els.btnProg.setAttribute("aria-selected", isProg);
+  els.btnRem.setAttribute("aria-selected", !isProg);
+  els.panelProg.style.display = isProg ? "" : "none";
+  els.panelRem.style.display = isProg ? "none" : "";
+  els.progNote.style.display = isProg ? "" : "none";
+  render();
+}
+
+[els.m1,els.m2,els.chi1,els.chi2,els.mf,els.chif,els.qonly,els.inc].forEach(el=>{
+  el.addEventListener("input", render);
+});
+
+function currentPhysics(){
+  const iotaRad = (+els.inc.value)*Math.PI/180;
+  if (mode==="progenitor"){
+    const m1=+els.m1.value, m2=+els.m2.value, c1=+els.chi1.value, c2=+els.chi2.value;
+    const r = remnantFromProgenitor(m1,m2,c1,c2);
+    return { Mf:r.Mf, chif:r.chif, delta:r.delta, eta:r.eta, Erad:r.Erad, iotaRad };
+  } else {
+    const Mf=+els.mf.value, chif=+els.chif.value, q=+els.qonly.value;
+    const delta = (q-1)/(q+1);
+    const eta = q/Math.pow(1+q,2);
+    return { Mf, chif, delta, eta, Erad:null, iotaRad };
+  }
+}
+
+function fmt(x,d){ return x.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+
+function updateReadouts(){
+  els.outM1.textContent = (+els.m1.value)+" M☉";
+  els.outM2.textContent = (+els.m2.value)+" M☉";
+  els.outChi1.textContent = fmt(+els.chi1.value,2);
+  els.outChi2.textContent = fmt(+els.chi2.value,2);
+  els.outMf.textContent = (+els.mf.value)+" M☉";
+  els.outChif.textContent = fmt(+els.chif.value,3);
+  els.outQonly.textContent = fmt(+els.qonly.value,2);
+  els.outInc.textContent = Math.round(+els.inc.value)+"°";
+}
+
+/* ---------- tiny SVG helpers ---------- */
+const SVGNS = "http://www.w3.org/2000/svg";
+function el(tag, attrs){
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function niceNum(range, round){
+  const exp = Math.floor(Math.log10(range));
+  const frac = range/Math.pow(10,exp);
+  let nice;
+  if (round){ if (frac<1.5) nice=1; else if (frac<3) nice=2; else if (frac<7) nice=5; else nice=10; }
+  else { if (frac<=1) nice=1; else if (frac<=2) nice=2; else if (frac<=5) nice=5; else nice=10; }
+  return nice*Math.pow(10,exp);
+}
+function niceScale(min, max, ticks){
+  if (min===max){ min -= 1; max += 1; }
+  const range = niceNum(max-min, false);
+  const step = niceNum(range/(ticks-1), true);
+  const niceMin = Math.floor(min/step)*step;
+  const niceMax = Math.ceil(max/step)*step;
+  const out = [];
+  for (let v=niceMin; v<=niceMax+step*0.5; v+=step) out.push(Math.round(v*1e6)/1e6);
+  return { min:niceMin, max:niceMax, ticks:out, step };
+}
+
+const tooltip = $("tooltip");
+function showTip(evt, html){
+  tooltip.innerHTML = html;
+  tooltip.classList.add("show");
+  moveTip(evt);
+}
+function moveTip(evt){
+  const pad=14;
+  let x = evt.clientX+pad, y = evt.clientY+pad;
+  const tw = tooltip.offsetWidth||160, th = tooltip.offsetHeight||50;
+  if (x+tw>window.innerWidth-8) x = evt.clientX-tw-pad;
+  if (y+th>window.innerHeight-8) y = evt.clientY-th-pad;
+  tooltip.style.left = x+"px"; tooltip.style.top = y+"px";
+}
+function hideTip(){ tooltip.classList.remove("show"); }
+
+/* ---------- Panel A1: frequency–damping scatter ---------- */
+function renderScatter(rows){
+  const svg = $("svg-scatter");
+  svg.innerHTML = "";
+  const W=560,H=300, ML=52,MR=18,MT=28,MB=38;
+  const plotW=W-ML-MR, plotH=H-MT-MB;
+
+  const fs = rows.map(r=>r.f_Hz), ts = rows.map(r=>r.tau_ms);
+  const xs = niceScale(0, Math.max(...fs)*1.12, 5);
+  const ys = niceScale(0, Math.max(...ts)*1.18, 5);
+  const X = v => ML + (v-xs.min)/(xs.max-xs.min)*plotW;
+  const Y = v => MT + plotH - (v-ys.min)/(ys.max-ys.min)*plotH;
+
+  xs.ticks.forEach(t=>{
+    svg.appendChild(el("line",{class:"grid-line",x1:X(t),x2:X(t),y1:MT,y2:MT+plotH}));
+    const lab = el("text",{class:"tick-label",x:X(t),y:MT+plotH+16,"text-anchor":"middle"});
+    lab.textContent = Math.round(t); svg.appendChild(lab);
+  });
+  ys.ticks.forEach(t=>{
+    svg.appendChild(el("line",{class:"grid-line",x1:ML,x2:ML+plotW,y1:Y(t),y2:Y(t)}));
+    const lab = el("text",{class:"tick-label",x:ML-8,y:Y(t)+3,"text-anchor":"end"});
+    lab.textContent = t.toFixed(t<1?2:1); svg.appendChild(lab);
+  });
+  svg.appendChild(el("line",{class:"axis-line",x1:ML,x2:ML+plotW,y1:MT+plotH,y2:MT+plotH}));
+  svg.appendChild(el("line",{class:"axis-line",x1:ML,x2:ML,y1:MT,y2:MT+plotH}));
+  const capX = el("text",{class:"axis-caption",x:ML+plotW,y:H-4,"text-anchor":"end"});
+  capX.textContent = "frequency f  (Hz)"; svg.appendChild(capX);
+  const capY = el("text",{class:"axis-caption",x:0,y:14,"text-anchor":"start"});
+  capY.textContent = "τ (ms)"; svg.appendChild(capY);
+
+  // spread direct labels vertically so near-degenerate modes (e.g. 210≈220
+  // at low spin, or 320≈330) don't print on top of one another
+  const order = [...rows].sort((a,b)=>a.f_Hz-b.f_Hz);
+  const labelDir = {};
+  order.forEach((r,i)=>{ labelDir[r.key] = (i%2===0) ? -1 : 1; });
+
+  rows.forEach(r=>{
+    const cx=X(r.f_Hz), cy=Y(r.tau_ms);
+    const dot = el("circle",{cx,cy,r:6.5,class:"mode-mark",style:`fill:var(--series-${r.key})`});
+    dot.addEventListener("mousemove", (e)=>{
+      showTip(e, `<div class="t-title">${r.label}</div>`+
+        `<div class="t-row"><span>f</span><span>${r.f_Hz.toFixed(1)} Hz</span></div>`+
+        `<div class="t-row"><span>τ</span><span>${r.tau_ms.toFixed(3)} ms</span></div>`+
+        `<div class="t-row"><span>Q</span><span>${r.Q.toFixed(2)}</span></div>`);
+    });
+    dot.addEventListener("mouseleave", hideTip);
+    svg.appendChild(dot);
+    const dy = labelDir[r.key]<0 ? -10 : 17;
+    const lab = el("text",{class:"mode-label",x:cx+8,y:cy+dy});
+    lab.textContent = r.key; svg.appendChild(lab);
+  });
+}
+
+/* ---------- Panel A2: time-domain reconstruction ---------- */
+function renderTimeDomain(rows){
+  const svg = $("svg-time");
+  svg.innerHTML = "";
+  const W=560,H=200, ML=52,MR=18,MT=14,MB=32;
+  const plotW=W-ML-MR, plotH=H-MT-MB;
+
+  const tau220 = rows.find(r=>r.key==="220").tau_ms;
+  const tMax = Math.min(45, Math.max(8, tau220*4.2));
+  const N = 420;
+  const series = rows.map(r=>{
+    const pts=[];
+    for (let i=0;i<=N;i++){
+      const t = i/N*tMax;
+      const val = r.amp * Math.exp(-t/r.tau_ms) * Math.cos(2*Math.PI*r.f_Hz*t/1000);
+      pts.push([t,val]);
+    }
+    return { key:r.key, label:r.label, pts };
+  });
+  const total = [];
+  for (let i=0;i<=N;i++){
+    const t = i/N*tMax;
+    let s=0;
+    rows.forEach(r=>{ s += r.amp*Math.exp(-t/r.tau_ms)*Math.cos(2*Math.PI*r.f_Hz*t/1000); });
+    total.push([t,s]);
+  }
+  const ymax = Math.max(0.05, ...total.map(p=>Math.abs(p[1])))*1.15;
+
+  const xs = niceScale(0, tMax, 5);
+  const X = v => ML + v/tMax*plotW;
+  const Y = v => MT + plotH/2 - v/ymax*(plotH/2);
+
+  xs.ticks.forEach(t=>{
+    if (t>tMax) return;
+    svg.appendChild(el("line",{class:"grid-line",x1:X(t),x2:X(t),y1:MT,y2:MT+plotH}));
+    const lab = el("text",{class:"tick-label",x:X(t),y:MT+plotH+16,"text-anchor":"middle"});
+    lab.textContent = t.toFixed(1); svg.appendChild(lab);
+  });
+  svg.appendChild(el("line",{class:"grid-line",x1:ML,x2:ML+plotW,y1:Y(0),y2:Y(0)}));
+  svg.appendChild(el("line",{class:"axis-line",x1:ML,x2:ML,y1:MT,y2:MT+plotH}));
+  const capX = el("text",{class:"axis-caption",x:ML+plotW,y:H-3,"text-anchor":"end"});
+  capX.textContent = "time since peak  (ms)"; svg.appendChild(capX);
+
+  series.forEach(s=>{
+    const d = s.pts.map((p,i)=> (i===0?"M":"L") + X(p[0]).toFixed(2)+","+Y(p[1]).toFixed(2)).join(" ");
+    svg.appendChild(el("path",{d, class:"trace-line", style:`stroke:var(--series-${s.key});opacity:.55`}));
+  });
+  const dTot = total.map((p,i)=> (i===0?"M":"L") + X(p[0]).toFixed(2)+","+Y(p[1]).toFixed(2)).join(" ");
+  const totalPath = el("path",{d:dTot, class:"trace-total"});
+  svg.appendChild(totalPath);
+
+  const hit = el("rect",{x:ML,y:MT,width:plotW,height:plotH,fill:"transparent"});
+  hit.addEventListener("mousemove",(e)=>{
+    const rect = svg.getBoundingClientRect();
+    const scaleX = W/rect.width;
+    const xpix = (e.clientX-rect.left)*scaleX;
+    const t = Math.max(0, Math.min(tMax, (xpix-ML)/plotW*tMax));
+    const idx = Math.round(t/tMax*N);
+    const val = total[idx][1];
+    showTip(e, `<div class="t-title">t = ${t.toFixed(2)} ms</div>`+
+      `<div class="t-row"><span>total strain (arb.)</span><span>${val.toFixed(3)}</span></div>`);
+  });
+  hit.addEventListener("mouseleave", hideTip);
+  svg.appendChild(hit);
+}
+
+/* ---------- Panel B: amplitude bars ---------- */
+function renderBars(rows){
+  const svg = $("svg-bars");
+  svg.innerHTML = "";
+  const W=400,H=300, ML=64,MR=44,MT=10,MB=14;
+  const plotW=W-ML-MR, plotH=H-MT-MB;
+  const n = rows.length;
+  const rowH = plotH/n;
+  const maxAmp = Math.max(0.02, ...rows.map(r=>r.amp));
+  const xs = niceScale(0, maxAmp*1.15, 4);
+  const X = v => ML + v/xs.max*plotW;
+
+  xs.ticks.forEach(t=>{
+    svg.appendChild(el("line",{class:"grid-line",x1:X(t),x2:X(t),y1:MT,y2:MT+plotH}));
+    const lab = el("text",{class:"tick-label",x:X(t),y:MT+plotH+12,"text-anchor":"middle"});
+    lab.textContent = t.toFixed(2); svg.appendChild(lab);
+  });
+  svg.appendChild(el("line",{class:"axis-line",x1:ML,x2:ML,y1:MT,y2:MT+plotH}));
+
+  rows.forEach((r,i)=>{
+    const cy = MT + i*rowH + rowH/2;
+    const barH = Math.min(22, rowH*0.52);
+    const w = Math.max(1.5, X(r.amp)-ML);
+    const nameLab = el("text",{class:"bar-name",x:ML-8,y:cy+4,"text-anchor":"end"});
+    nameLab.textContent = r.key; svg.appendChild(nameLab);
+    const rect = el("rect",{x:ML,y:cy-barH/2,width:w,height:barH,rx:3,class:"bar-rect",
+      style:`fill:var(--series-${r.key})`});
+    rect.addEventListener("mousemove",(e)=>{
+      showTip(e, `<div class="t-title">${r.label}</div>`+
+        `<div class="t-row"><span>relative amplitude</span><span>${r.amp.toFixed(3)}</span></div>`);
+    });
+    rect.addEventListener("mouseleave", hideTip);
+    svg.appendChild(rect);
+    const valLab = el("text",{class:"bar-value",x:ML+w+7,y:cy+4});
+    valLab.textContent = r.amp.toFixed(2); svg.appendChild(valLab);
+  });
+}
+
+function renderLegend(){
+  const wrap = $("legend-modes");
+  wrap.innerHTML = "";
+  MODES.forEach(m=>{
+    const item = document.createElement("div"); item.className="legend-item";
+    const sw = document.createElement("span"); sw.className="legend-swatch";
+    sw.style.background = `var(--series-${m.key})`;
+    item.appendChild(sw);
+    const txt = document.createElement("span"); txt.textContent = `${m.key}  ${m.label}`;
+    item.appendChild(txt);
+    wrap.appendChild(item);
+  });
+}
+
+/* ---------- Horizon simulation: mesh, shading, animation ---------- */
+const HZ = (function(){
+  const N_LAT = 22, N_LON = 40;
+  // unit sphere lat/long mesh (poles included as degenerate rings)
+  const verts = []; // {theta, phi, ux,uy,uz}
+  for (let i=0;i<=N_LAT;i++){
+    const theta = Math.PI * i/N_LAT;
+    const row = [];
+    for (let j=0;j<=N_LON;j++){
+      const phi = 2*Math.PI * j/N_LON;
+      row.push({
+        theta, phi,
+        ux: Math.sin(theta)*Math.cos(phi),
+        uy: Math.sin(theta)*Math.sin(phi),
+        uz: Math.cos(theta),
+      });
+    }
+    verts.push(row);
+  }
+  // per-mode angular shape, normalized so max|shape| = 1 over the mesh
+  const shapeCache = {}; // "l,m" -> {norm, table[i][j]}
+  function getShape(l,m){
+    const key = l+","+m;
+    if (shapeCache[key]) return shapeCache[key];
+    let maxAbs = 1e-9;
+    const table = verts.map(row=> row.map(v=>{
+      const s = realShape(l,m,v.theta,v.phi);
+      if (Math.abs(s)>maxAbs) maxAbs=Math.abs(s);
+      return s;
+    }));
+    const entry = { table, norm: maxAbs };
+    shapeCache[key] = entry;
+    return entry;
+  }
+
+  const canvas = $("horizon-canvas");
+  const ctx = canvas.getContext("2d");
+  const toggleBtn = $("horizon-toggle"), toggleLabel = $("horizon-toggle-label"), toggleIcon = $("horizon-icon");
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let state = { rows: [], tMax: 20 };
+  let playing = !reduceMotion;
+  let t0 = performance.now();
+  const LOOP_MS = 6200;      // wall-clock duration of one ringdown loop, heavily slowed down
+  const ROT_PERIOD_MS = 15000; // camera revolution period
+  const VIS_SCALE = 0.85;    // exaggeration factor applied on top of per-mode unit-normalized shapes
+
+  function setState(rows, tMax){ state = { rows, tMax }; }
+
+  function computeFrame(physT){
+    // physT: ringdown time in ms, wrapped into [0, tMax]
+    const disp = verts.map(row=>row.map(()=>0));
+    state.rows.forEach(r=>{
+      if (r.amp < 0.003) return;
+      const env = r.amp * Math.exp(-physT/r.tau_ms) * Math.cos(2*Math.PI*r.f_Hz*physT/1000);
+      const sh = getShape(r.l, r.m);
+      for (let i=0;i<verts.length;i++){
+        const rowT = disp[i], shRow = sh.table[i];
+        for (let j=0;j<rowT.length;j++) rowT[j] += env*(shRow[j]/sh.norm);
+      }
+    });
+    return disp;
+  }
+
+  function draw(wallMs){
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    const physT = playing ? ((wallMs - t0) % LOOP_MS)/LOOP_MS*state.tMax : 0;
+    const rot = playing ? ((wallMs - t0) % ROT_PERIOD_MS)/ROT_PERIOD_MS*2*Math.PI : 0.7;
+    const disp = computeFrame(physT);
+
+    const tilt = 0.34; // fixed camera elevation, radians
+    const cosT=Math.cos(tilt), sinT=Math.sin(tilt), cosR=Math.cos(rot), sinR=Math.sin(rot);
+    const dist = 3.1, fov = 300;
+    const cx = W/2, cy = H/2 + 10;
+
+    // project every vertex
+    const proj = verts.map((row,i)=> row.map((v,j)=>{
+      const rFac = Math.max(0.55, Math.min(1.7, 1 + VIS_SCALE*disp[i][j]));
+      let x=v.ux*rFac, y=v.uy*rFac, z=v.uz*rFac;
+      // rotate about vertical (y) axis
+      let x1 = x*cosR - z*sinR, z1 = x*sinR + z*cosR;
+      // tilt camera (rotate about x axis)
+      let y1 = y*cosT - z1*sinT, z2 = y*sinT + z1*cosT;
+      const scale = fov/(dist+z2);
+      // simple radial-normal shading: light from upper-front-left
+      const nx=v.ux, ny=v.uy, nz=v.uz;
+      const lx=-0.45, ly=-0.62, lz=0.65;
+      const ndotl = nx*lx+ny*ly+nz*lz;
+      // camera-space normal z-component (same rotation as position, unit vector)
+      const nx1 = nx*cosR - nz*sinR, nz1 = nx*sinR + nz*cosR;
+      const nz2 = ny*sinT + nz1*cosT;
+      return { sx: cx + x1*scale, sy: cy - y1*scale, depth: z2, ndotl, facing: nz2 };
+    }));
+
+    const style = getComputedStyle(document.documentElement);
+    const rimColor = (style.getPropertyValue("--accent")||"#9085e9").trim();
+    const isDark = style.getPropertyValue("color-scheme").includes("dark");
+    const baseLo = isDark ? [8,9,14] : [16,17,24];
+    const baseHi = isDark ? [58,62,84] : [96,100,128];
+
+    // build quad list with average depth for painter's-algorithm sort
+    const quads = [];
+    for (let i=0;i<N_LAT;i++){
+      for (let j=0;j<N_LON;j++){
+        const a=proj[i][j], b=proj[i][j+1], c=proj[i+1][j+1], d=proj[i+1][j];
+        const avgZ = (a.depth+b.depth+c.depth+d.depth)/4;
+        const avgN = (a.ndotl+b.ndotl+c.ndotl+d.ndotl)/4;
+        const avgFacing = (a.facing+b.facing+c.facing+d.facing)/4;
+        quads.push({a,b,c,d,avgZ,avgN,avgFacing});
+      }
+    }
+    quads.sort((p,q)=>p.avgZ-q.avgZ); // far first
+
+    quads.forEach(q=>{
+      const shade = Math.max(0, Math.min(1, (q.avgN+0.15)/1.15));
+      // fresnel-style rim: bright only within a narrow band of the true
+      // silhouette (|camera-space normal z| near 0), power-law falloff
+      // so it reads as a thin limb glow rather than a wide lit band
+      const rim = Math.pow(Math.max(0, 1 - Math.abs(q.avgFacing)/0.32), 4);
+      const r = baseLo[0] + (baseHi[0]-baseLo[0])*shade;
+      const g = baseLo[1] + (baseHi[1]-baseLo[1])*shade;
+      const b = baseLo[2] + (baseHi[2]-baseLo[2])*shade;
+      ctx.beginPath();
+      ctx.moveTo(q.a.sx,q.a.sy); ctx.lineTo(q.b.sx,q.b.sy); ctx.lineTo(q.c.sx,q.c.sy); ctx.lineTo(q.d.sx,q.d.sy);
+      ctx.closePath();
+      ctx.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
+      ctx.fill();
+      if (rim>0.12){
+        ctx.save();
+        ctx.globalAlpha = Math.min(0.6, rim);
+        ctx.strokeStyle = rimColor;
+        ctx.lineWidth = 1.0;
+        ctx.stroke();
+        ctx.restore();
+      }
+    });
+  }
+
+  function loop(wallMs){
+    draw(wallMs);
+    requestAnimationFrame(loop);
+  }
+
+  function setPlaying(p){
+    playing = p;
+    toggleBtn.setAttribute("aria-pressed", String(p));
+    toggleLabel.textContent = p ? "Pause" : "Play";
+    toggleIcon.innerHTML = p ? "&#10073;&#10073;" : "&#9654;";
+    if (p) t0 = performance.now();
+  }
+  toggleBtn.addEventListener("click", ()=>setPlaying(!playing));
+  setPlaying(playing);
+
+  // crisp canvas at device pixel ratio, sized to its CSS box
+  function fitCanvas(){
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio||1);
+    const w = Math.round(rect.width*dpr), h = Math.round(rect.width*(430/520)*dpr);
+    if (canvas.width!==w || canvas.height!==h){ canvas.width=w; canvas.height=h; }
+  }
+  fitCanvas();
+  window.addEventListener("resize", fitCanvas);
+
+  requestAnimationFrame(loop);
+  return { setState };
+})();
+
+/* ---------- master render ---------- */
+function render(){
+  updateReadouts();
+  const phys = currentPhysics();
+
+  els.roMf.textContent = phys.Mf.toFixed(1)+" M☉";
+  els.roChif.textContent = phys.chif.toFixed(3);
+  els.roErad.textContent = phys.Erad==null ? "—" : (phys.Erad*100).toFixed(1)+"%";
+  els.roDelta.textContent = phys.delta.toFixed(3);
+  els.roEta.textContent = phys.eta.toFixed(3);
+
+  const rows = MODES.map(m=>{
+    const fd = qnmFreqDamping(m.key, phys.Mf, phys.chif);
+    const amp = observedAmplitude(m.key, m.l, m.m, phys.delta, phys.iotaRad);
+    return { key:m.key, label:m.label, l:m.l, m:m.m, f_Hz:fd.f_Hz, tau_ms:fd.tau_ms, Q:fd.Q, amp };
+  });
+
+  renderScatter(rows);
+  renderTimeDomain(rows);
+  renderBars(rows);
+
+  const tau220 = rows.find(r=>r.key==="220").tau_ms;
+  const tMaxHorizon = Math.min(45, Math.max(8, tau220*4.2));
+  HZ.setState(rows, tMaxHorizon);
+}
+
+renderLegend();
+updateReadouts();
+render();
+window.addEventListener("resize", render);
+
+})();
+</script>
+
+</body>
+</html>

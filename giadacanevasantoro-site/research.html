@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research — Giada Caneva Santoro</title>
+<meta name="description" content="Research overview: black hole spectroscopy, quasinormal modes, ringdown, tidal Love numbers, and environmental effects on gravitational-wave signals.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,380;0,9..144,560;1,9..144,420;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="site-nav">
+    <a class="wordmark" href="index.html">Giada Caneva Santoro</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="research.html" aria-current="page">Research</a></li>
+      <li><a href="publications.html">Publications</a></li>
+      <li><a href="talks.html">Talks &amp; CV</a></li>
+    </ul>
+  </nav>
+
+  <p class="eyebrow">Research</p>
+  <h1>Black holes, tested against what we actually measure.</h1>
+  <p class="lede">I work on gravitational-wave tests of general relativity, mostly by asking how much of a black hole's post-merger signal we can pin down from data alone, and where that stops matching the vacuum Kerr prediction.</p>
+
+  <h2>Black hole spectroscopy &amp; ringdown</h2>
+  <p>After two black holes merge, the remnant relaxes to a stationary Kerr black hole by radiating a superposition of damped sinusoids — quasinormal modes (QNMs), each with a complex frequency set entirely by the remnant's mass and spin. Measuring two or more modes independently is a direct test of the no-hair property of Kerr black holes. My work is mostly on the data-analysis side of this: how many modes a given signal-to-noise ratio actually lets you resolve, how mode content depends on the progenitor binary's mass ratio and spins, and what systematics (start-time choice, overtones, nonlinear coupling) do to the inferred remnant parameters. I lead development on <a href="https://git.ligo.org/lscsoft/pyring" target="_blank" rel="noopener">pyRing</a>, the ringdown Bayesian-inference pipeline used by the LIGO&ndash;Virgo&ndash;KAGRA Collaboration.</p>
+  <div class="card">
+    <span class="tag">Interactive</span>
+    <h3>Reading the Remnant</h3>
+    <p class="card-meta">Mode frequencies, damping times &amp; amplitudes vs. remnant mass and spin</p>
+    <p>An explainer I built for the QNM spectrum itself: pick a final mass and spin (or a progenitor binary), and see how the ringdown frequencies, damping times, and relative mode amplitudes shift — plus a rendering of a horizon actually ringing down.</p>
+    <a class="card-cta" href="demos/reading-the-remnant.html">Open the explainer &rarr;</a>
+  </div>
+
+  <h2>Quasinormal modes beyond linear theory</h2>
+  <p>Linear QNM theory describes small perturbations of Kerr. Numerical-relativity waveforms show measurable departures from it even a few cycles after merger, including quadratic (nonlinear) modes sourced by the linear ones beating against themselves. I'm currently working on extracting and characterizing these quadratic modes from the SXS:BBH:3617 numerical-relativity waveform, matched to the parameters of GW250114, to see how much of the early post-merger signal they explain and what that implies for start-time systematics in spectroscopy analyses.</p>
+
+  <h2>Tidal Love numbers</h2>
+  <p>A Kerr black hole's tidal Love numbers vanish identically in general relativity — a sharp, parameter-free prediction, and a correspondingly sharp test if a compact object's Love numbers turn out to be nonzero. I lead a paper putting observational constraints on this: <em>&ldquo;No Love for black holes&rdquo;</em> (<a href="https://arxiv.org/abs/2512.01918" target="_blank" rel="noopener">arXiv:2512.01918</a>), currently under review at Physical Review D. See <a href="publications.html">Publications</a> for the full record.</p>
+
+  <h2>Astrophysical environments</h2>
+  <p>Real black holes don't merge in vacuum. I've worked on what surrounding matter and environmental effects do to gravitational-wave observables, and on using population-level constraints from GWTC catalog events to bound those effects — published in Physical Review Letters (<a href="publications.html">Publications</a>).</p>
+
+  <div class="todo">
+    <span class="tag">Fill in</span>
+    <span>This page is a sketch of your research program in your own words — expand each section with more detail, add collaborators/funding where relevant, and correct anything I've oversimplified or gotten wrong about the projects.</span>
+  </div>
+
+  <footer>
+    <p>&copy; <span id="y"></span> Giada Caneva Santoro. Built with plain HTML — <a href="https://github.com/giadacanevasantoro/giadacanevasantoro.github.io" target="_blank" rel="noopener">source</a>.</p>
+  </footer>
+</div>
+<script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+</body>
+</html>
