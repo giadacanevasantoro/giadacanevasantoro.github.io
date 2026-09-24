@@ -6,51 +6,74 @@
 <title>About — Giada Caneva Santoro</title>
 <meta name="description" content="Giada Caneva Santoro — postdoctoral researcher, Niels Bohr Institute. Black holes and gravitational waves.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,380;0,9..144,560;1,9..144,420;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/hero.css">
 </head>
 <body>
-<div class="wrap">
+<div class="hero-page about-page">
 
-  <nav class="site-nav">
-    <a class="wordmark" href="index.html">Giada Caneva Santoro</a>
-    <ul>
-      <li><a href="about.html" aria-current="page">About</a></li>
-      <li><a href="research.html">Research</a></li>
-      <li><a href="publications.html">Publications</a></li>
-      <li><a href="talks.html">Talks &amp; CV</a></li>
-    </ul>
+  <a class="hero-name" href="index.html">Giada Caneva Santoro</a>
+  <nav class="about-nav-links">
+    <a href="research.html">Research</a>
+    <a href="publications.html">Publications</a>
+    <a href="talks.html">Talks &amp; CV</a>
   </nav>
 
-  <p class="eyebrow">Niels Bohr Institute &middot; University of Copenhagen</p>
-  <h1>I study black holes through the gravitational waves they give off.</h1>
+  <div class="cone-stage">
+    <div class="blob blob-amber"></div>
+    <div class="blob blob-violet"></div>
+    <div class="blob blob-cyan"></div>
 
-  <p class="lede">Postdoctoral researcher in the Strong Gravity group at the Niels Bohr Institute, supervised by Vitor Cardoso.</p>
+    <div class="cone-wrap">
+      <svg viewBox="0 0 420 640" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <clipPath id="coneClip">
+            <path d="M 60,50 A 150,34 0 0 0 360,50 L 210,330 L 360,610 A 150,34 0 0 1 60,610 L 210,330 Z"/>
+          </clipPath>
+          <filter id="blurBlob" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="40"/>
+          </filter>
+          <linearGradient id="glassSheen" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.16"/>
+            <stop offset="45%" stop-color="#ffffff" stop-opacity="0.02"/>
+            <stop offset="55%" stop-color="#ffffff" stop-opacity="0.02"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.14"/>
+          </linearGradient>
+        </defs>
 
-  <p>When two black holes collide, the collision sends ripples through space called gravitational waves. I study the part of the signal produced just after merger to test whether the black hole left behind behaves the way general relativity predicts.</p>
+        <g clip-path="url(#coneClip)">
+          <rect x="0" y="0" width="420" height="640" fill="#0b0c12"/>
+          <circle cx="330" cy="95" r="115" fill="#ffb066" opacity="0.38" filter="url(#blurBlob)"/>
+          <circle cx="115" cy="560" r="135" fill="#8a78ff" opacity="0.32" filter="url(#blurBlob)"/>
+          <circle cx="355" cy="340" r="95" fill="#5be0d8" opacity="0.24" filter="url(#blurBlob)"/>
+          <rect x="0" y="0" width="420" height="640" fill="url(#glassSheen)"/>
+        </g>
 
-  <div class="link-row">
-    <a class="pill-link" href="mailto:REPLACE_WITH_EMAIL">Email</a>
-    <a class="pill-link" href="https://github.com/giadacanevasantoro" target="_blank" rel="noopener">GitHub</a>
-    <a class="pill-link" href="REPLACE_WITH_ADS_OR_INSPIRE_URL" target="_blank" rel="noopener">ADS / INSPIRE</a>
-    <a class="pill-link" href="REPLACE_WITH_ORCID_URL" target="_blank" rel="noopener">ORCID</a>
-    <a class="pill-link" href="REPLACE_WITH_SCHOLAR_URL" target="_blank" rel="noopener">Google Scholar</a>
+        <path d="M 60,50 A 150,34 0 0 1 360,50" fill="none" stroke="#ffe9c7" stroke-width="1" stroke-dasharray="2 4" opacity="0.25"/>
+        <path d="M 60,610 A 150,34 0 0 0 360,610" fill="none" stroke="#bcd4ff" stroke-width="1" stroke-dasharray="2 4" opacity="0.25"/>
+
+        <path d="M 60,50 L 210,330 L 60,610" fill="none" stroke="#ffe9c7" stroke-width="1.1" opacity="0.4"/>
+        <path d="M 360,50 L 210,330 L 360,610" fill="none" stroke="#ffe9c7" stroke-width="1.1" opacity="0.4"/>
+
+        <path d="M 60,50 A 150,34 0 0 0 360,50" fill="none" stroke="#ffe9c7" stroke-width="1.6" opacity="0.75"/>
+        <path d="M 60,610 A 150,34 0 0 1 360,610" fill="none" stroke="#bcd4ff" stroke-width="1.6" opacity="0.75"/>
+      </svg>
+
+      <div class="worldline"></div>
+      <div class="pt pt-now"><span class="dot"></span><span class="lbl"><b>Postdoc</b>Niels Bohr Institute, Copenhagen</span></div>
+      <div class="pt pt-phd"><span class="dot"></span><span class="lbl"><b>PhD</b>IFAE, Barcelona</span></div>
+      <div class="pt pt-master"><span class="dot"></span><span class="lbl"><b>Master&rsquo;s</b>Sapienza University, Rome</span></div>
+      <div class="pt pt-bsc"><span class="dot"></span><span class="lbl"><b>Bachelor&rsquo;s</b>Sapienza University, Rome</span></div>
+    </div>
   </div>
-  <div class="todo">
-    <span class="tag">Fill in</span>
-    <span>Swap the placeholder links above for your real email and profile URLs, and add a CV PDF to link from the Talks &amp; CV page.</span>
+
+  <div class="about-links">
+    <a href="mailto:REPLACE_WITH_EMAIL">Email</a>
+    <a href="https://github.com/giadacanevasantoro" target="_blank" rel="noopener">GitHub</a>
+    <a href="REPLACE_WITH_ADS_OR_INSPIRE_URL" target="_blank" rel="noopener">ADS / INSPIRE</a>
+    <a href="REPLACE_WITH_ORCID_URL" target="_blank" rel="noopener">ORCID</a>
+    <a href="REPLACE_WITH_SCHOLAR_URL" target="_blank" rel="noopener">Google Scholar</a>
   </div>
 
-  <h2>Recently</h2>
-  <ul class="plain">
-    <li>Led a study testing whether black holes can be stretched by nearby gravity, as general relativity predicts they can't — <a href="https://arxiv.org/abs/2512.01918" target="_blank" rel="noopener">read the paper</a>, currently under review.</li>
-    <li>Working out how much of a black hole's post-collision signal comes from its simplest "notes" alone, versus more complex effects, using a supercomputer simulation matched to a real detected event.</li>
-    <li>Built an interactive piece showing how a black hole's ringdown signal changes with its mass and spin — <a href="demos/reading-the-remnant.html">try it &rarr;</a></li>
-  </ul>
-
-  <footer>
-    <p>&copy; <span id="y"></span> Giada Caneva Santoro. Built with plain HTML — <a href="https://github.com/giadacanevasantoro/giadacanevasantoro.github.io" target="_blank" rel="noopener">source</a>.</p>
-  </footer>
 </div>
-<script>document.getElementById("y").textContent = new Date().getFullYear();</script>
 </body>
 </html>
