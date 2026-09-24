@@ -1,0 +1,89 @@
+/* ============================================================
+   Hero / visual pages — landing (index.html) and explore.html
+   Dark, full-bleed, minimal. Separate from assets/style.css,
+   which still styles the text pages (about, research, publications, talks).
+   ============================================================ */
+
+@media (prefers-color-scheme: light){
+  :root{ color-scheme: dark; }
+}
+
+*{ box-sizing:border-box; }
+html,body{
+  margin:0; height:100%; background:#040406; color:#eef0f6;
+  font-family:"IBM Plex Sans", system-ui, sans-serif;
+}
+
+.hero-page{
+  min-height:100vh; display:flex; flex-direction:column;
+  background:
+    radial-gradient(ellipse 900px 600px at 50% 48%, rgba(120,90,50,0.10), transparent 70%),
+    #040406;
+}
+
+.hero-name{
+  position:fixed; top:26px; left:28px; z-index:5;
+  font-family:"IBM Plex Mono", monospace; font-size:13px; letter-spacing:.04em;
+  color:#d7d9e4; text-decoration:none;
+}
+.hero-name:hover{ color:#ffd9a8; }
+
+.hero-stage{
+  flex:1; display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding:40px 20px;
+}
+.hero-link{ display:block; line-height:0; }
+.hero-link svg{ width:min(72vw, 620px); height:auto; }
+.hero-spin{ transform-origin:450px 310px; animation:spin 90s linear infinite; }
+@media (prefers-reduced-motion: reduce){ .hero-spin{ animation:none; } }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+.hero-hint{
+  position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:#6b6f82;
+}
+
+/* ---- Explore page ---- */
+.explore-page{ min-height:100vh; padding:100px 28px 60px; }
+.explore-head{ max-width:720px; margin:0 auto 56px; text-align:center; }
+.explore-eyebrow{
+  font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.1em;
+  text-transform:uppercase; color:#8b90a6; margin:0 0 10px;
+}
+.explore-title{
+  font-family:"Fraunces", Georgia, serif; font-weight:560; font-size:clamp(1.6rem,3.6vw,2.2rem);
+  margin:0; color:#f2f3f8;
+}
+
+.tile-row{
+  display:flex; flex-wrap:wrap; gap:28px; justify-content:center;
+  max-width:1040px; margin:0 auto;
+}
+.tile{
+  width:300px; padding:26px 22px 22px; border-radius:16px;
+  background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07);
+  text-decoration:none; color:#eef0f6; text-align:center;
+  transition:border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.tile:hover{ border-color:rgba(255,220,170,0.35); background:rgba(255,255,255,0.045); transform:translateY(-2px); }
+.tile svg{ width:100%; height:auto; display:block; }
+.tile-label{
+  margin-top:14px; font-family:"IBM Plex Sans"; font-weight:600; font-size:15px;
+}
+.tile-sub{
+  margin-top:4px; font-family:"IBM Plex Sans"; font-size:12.5px; color:#9297ab;
+}
+
+.explore-foot{
+  max-width:1040px; margin:64px auto 0; padding-top:22px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  display:flex; flex-wrap:wrap; gap:18px; justify-content:center;
+  font-family:"IBM Plex Mono", monospace; font-size:12.5px;
+}
+.explore-foot a{ color:#9297ab; text-decoration:none; }
+.explore-foot a:hover{ color:#ffd9a8; }
+
+@media (max-width:520px){
+  .hero-stage{ padding:24px 12px; }
+}
