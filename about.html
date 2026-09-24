@@ -26,36 +26,68 @@
     <div class="cone-wrap">
       <svg viewBox="0 0 420 640" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <clipPath id="coneClip">
-            <path d="M 60,50 A 150,34 0 0 0 360,50 L 210,330 L 360,610 A 150,34 0 0 1 60,610 L 210,330 Z"/>
-          </clipPath>
-          <filter id="blurBlob" x="-100%" y="-100%" width="300%" height="300%">
-            <feGaussianBlur stdDeviation="40"/>
+          <filter id="wglow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="1.4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
-          <linearGradient id="glassSheen" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.16"/>
-            <stop offset="45%" stop-color="#ffffff" stop-opacity="0.02"/>
-            <stop offset="55%" stop-color="#ffffff" stop-opacity="0.02"/>
-            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.14"/>
-          </linearGradient>
         </defs>
+        <g fill="none">
+          <!-- FUTURE -->
+          <line x1="210" y1="330" x2="360.0" y2="50.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="352.7" y2="60.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="331.4" y2="70.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="298.2" y2="77.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="256.4" y2="82.3" class="waccent" filter="url(#wglow)"/>
+          <line x1="210" y1="330" x2="210.0" y2="84.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="163.6" y2="82.3" class="wmesh"/>
+          <line x1="210" y1="330" x2="121.8" y2="77.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="88.6" y2="70.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="67.3" y2="60.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="60.0" y2="50.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="67.3" y2="39.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="88.6" y2="30.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="121.8" y2="22.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="163.6" y2="17.7" class="waccent" filter="url(#wglow)"/>
+          <line x1="210" y1="330" x2="210.0" y2="16.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="256.4" y2="17.7" class="wmesh"/>
+          <line x1="210" y1="330" x2="298.2" y2="22.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="331.4" y2="30.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="352.7" y2="39.5" class="wmesh"/>
+          <ellipse cx="210.0" cy="251.6" rx="42.0" ry="9.5" class="wmesh"/>
+          <ellipse cx="210.0" cy="190.0" rx="75.0" ry="17.0" class="wmesh"/>
+          <ellipse cx="210.0" cy="134.0" rx="105.0" ry="23.8" class="wmesh"/>
+          <ellipse cx="210.0" cy="83.6" rx="132.0" ry="29.9" class="wmesh"/>
+          <ellipse cx="210.0" cy="50.0" rx="150.0" ry="34.0" class="wrim"/>
 
-        <g clip-path="url(#coneClip)">
-          <rect x="0" y="0" width="420" height="640" fill="#0b0c12"/>
-          <circle cx="330" cy="95" r="115" fill="#ffb066" opacity="0.38" filter="url(#blurBlob)"/>
-          <circle cx="115" cy="560" r="135" fill="#8a78ff" opacity="0.32" filter="url(#blurBlob)"/>
-          <circle cx="355" cy="340" r="95" fill="#5be0d8" opacity="0.24" filter="url(#blurBlob)"/>
-          <rect x="0" y="0" width="420" height="640" fill="url(#glassSheen)"/>
+          <!-- PAST -->
+          <line x1="210" y1="330" x2="360.0" y2="610.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="352.7" y2="620.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="331.4" y2="630.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="298.2" y2="637.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="256.4" y2="642.3" class="waccent" filter="url(#wglow)"/>
+          <line x1="210" y1="330" x2="210.0" y2="644.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="163.6" y2="642.3" class="wmesh"/>
+          <line x1="210" y1="330" x2="121.8" y2="637.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="88.6" y2="630.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="67.3" y2="620.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="60.0" y2="610.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="67.3" y2="599.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="88.6" y2="590.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="121.8" y2="582.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="163.6" y2="577.7" class="waccent" filter="url(#wglow)"/>
+          <line x1="210" y1="330" x2="210.0" y2="576.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="256.4" y2="577.7" class="wmesh"/>
+          <line x1="210" y1="330" x2="298.2" y2="582.5" class="wmesh"/>
+          <line x1="210" y1="330" x2="331.4" y2="590.0" class="wmesh"/>
+          <line x1="210" y1="330" x2="352.7" y2="599.5" class="wmesh"/>
+          <ellipse cx="210.0" cy="408.4" rx="42.0" ry="9.5" class="wmesh"/>
+          <ellipse cx="210.0" cy="470.0" rx="75.0" ry="17.0" class="wmesh"/>
+          <ellipse cx="210.0" cy="526.0" rx="105.0" ry="23.8" class="wmesh"/>
+          <ellipse cx="210.0" cy="576.4" rx="132.0" ry="29.9" class="wmesh"/>
+          <ellipse cx="210.0" cy="610.0" rx="150.0" ry="34.0" class="wrim"/>
+
+          <circle cx="210" cy="330" r="4.5" fill="#fff" filter="url(#wglow)"/>
         </g>
-
-        <path d="M 60,50 A 150,34 0 0 1 360,50" fill="none" stroke="#ffe9c7" stroke-width="1" stroke-dasharray="2 4" opacity="0.25"/>
-        <path d="M 60,610 A 150,34 0 0 0 360,610" fill="none" stroke="#bcd4ff" stroke-width="1" stroke-dasharray="2 4" opacity="0.25"/>
-
-        <path d="M 60,50 L 210,330 L 60,610" fill="none" stroke="#ffe9c7" stroke-width="1.1" opacity="0.4"/>
-        <path d="M 360,50 L 210,330 L 360,610" fill="none" stroke="#ffe9c7" stroke-width="1.1" opacity="0.4"/>
-
-        <path d="M 60,50 A 150,34 0 0 0 360,50" fill="none" stroke="#ffe9c7" stroke-width="1.6" opacity="0.75"/>
-        <path d="M 60,610 A 150,34 0 0 1 360,610" fill="none" stroke="#bcd4ff" stroke-width="1.6" opacity="0.75"/>
       </svg>
 
       <div class="worldline"></div>

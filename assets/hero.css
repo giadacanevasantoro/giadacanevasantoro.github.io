@@ -104,6 +104,9 @@ html,body{
 
 .cone-wrap{ position:relative; width:min(86vw,420px); aspect-ratio:420/640; }
 .cone-wrap svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+.wmesh{ stroke:#bfe3ff; stroke-width:0.6; opacity:0.28; }
+.wrim{ stroke:#eaf4ff; stroke-width:1.4; opacity:0.7; }
+.waccent{ stroke:#8fd8ff; stroke-width:1.6; opacity:0.85; }
 
 .worldline{
   position:absolute; left:50%; top:8%; bottom:5%; width:1px;
