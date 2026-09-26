@@ -152,3 +152,90 @@ html,body{
 @media (max-width:520px){
   .about-nav-links{ display:none; }
 }
+
+/* ---- Inside the Horizon (hidden interests page) ---- */
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+.horizon-stage{
+  flex:1; min-height:100vh; width:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:30px; padding:110px 24px 60px;
+}
+.horizon-eyebrow{
+  margin:0; font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.14em;
+  text-transform:uppercase; color:#666c82;
+}
+.horizon-row{
+  display:flex; gap:56px; flex-wrap:wrap; justify-content:center; align-items:center;
+}
+.horizon-item{
+  background:none; border:none; padding:14px; margin:0; cursor:pointer;
+  color:#6b7690; transition:color .25s ease, transform .25s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.horizon-item:hover,
+.horizon-item:focus-visible,
+.horizon-item.is-active{
+  color:#eaf4ff; transform:translateY(-3px); outline:none;
+}
+.horizon-icon-svg{ width:54px; height:54px; display:block; overflow:visible; }
+.horizon-caption{
+  min-height:1.4em; margin:0; max-width:440px; text-align:center;
+  font-family:"IBM Plex Mono", monospace; font-size:13px; letter-spacing:.01em;
+  color:#c7cad6; opacity:0; transform:translateY(4px);
+  transition:opacity .3s ease, transform .3s ease;
+}
+.horizon-caption.is-visible{ opacity:1; transform:translateY(0); }
+@media (max-width:520px){
+  .horizon-row{ gap:34px; }
+}
+
+/* ---- Music branch tree (Inside the Horizon) ---- */
+.horizon-tree{
+  position:relative; width:min(92vw,520px); aspect-ratio:480/200;
+  color:#9fb3c8; opacity:0; pointer-events:none;
+  transition:opacity .25s ease;
+}
+.horizon-tree.is-open{ opacity:1; pointer-events:auto; }
+.tree-svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+.tree-line{
+  stroke-dasharray:1; stroke-dashoffset:1;
+  transition:stroke-dashoffset .55s ease;
+}
+.horizon-tree.is-open .tl-trunk{ transition-delay:0s; stroke-dashoffset:0; }
+.horizon-tree.is-open .tl-a,
+.horizon-tree.is-open .tl-b{ transition-delay:.18s; stroke-dashoffset:0; }
+.horizon-tree.is-open .tl-a1,
+.horizon-tree.is-open .tl-a2,
+.horizon-tree.is-open .tl-b1,
+.horizon-tree.is-open .tl-b2{ transition-delay:.38s; stroke-dashoffset:0; }
+
+.tree-dot{
+  transform:scale(0); transform-box:fill-box; transform-origin:center;
+  opacity:0; transition:transform .3s ease, opacity .3s ease; transition-delay:.55s;
+}
+.horizon-tree.is-open .tree-dot{ transform:scale(1); opacity:1; }
+
+.tree-leaf{
+  position:absolute; width:120px; text-align:center; transform:translate(-50%,-100%) translateY(4px);
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px; line-height:1.35; color:#dfe6f2;
+  opacity:0; transition:opacity .4s ease, transform .4s ease; transition-delay:.62s;
+}
+.tree-leaf b{ display:block; font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:12.5px; color:#f2f3f8; margin-bottom:1px; }
+.horizon-tree.is-open .tree-leaf{ opacity:1; transform:translate(-50%,-100%) translateY(-6px); }
+
+.tl-1{ left:14.6%;  top:24%; }
+.tl-2{ left:36.5%;  top:21%; }
+.tl-3{ left:63.5%;  top:21%; }
+.tl-4{ left:85.4%;  top:24%; }
+
+@media (prefers-reduced-motion: reduce){
+  .horizon-tree, .tree-line, .tree-dot, .tree-leaf{ transition:none !important; }
+}
+@media (max-width:560px){
+  .horizon-tree{ width:min(94vw,420px); }
+  .tree-leaf{ width:96px; font-size:10.5px; }
+  .tree-leaf b{ font-size:11.5px; }
+}
