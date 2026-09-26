@@ -192,50 +192,67 @@ html,body{
   .horizon-row{ gap:34px; }
 }
 
-/* ---- Music branch tree (Inside the Horizon) ---- */
+/* ---- Music constellation (Inside the Horizon) ---- */
 .horizon-tree{
   position:relative; width:min(92vw,520px); aspect-ratio:480/200;
-  color:#9fb3c8; opacity:0; pointer-events:none;
+  color:#dfe6f2; opacity:0; pointer-events:none;
   transition:opacity .25s ease;
 }
 .horizon-tree.is-open{ opacity:1; pointer-events:auto; }
-.tree-svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
-.tree-line{
-  stroke-dasharray:1; stroke-dashoffset:1;
-  transition:stroke-dashoffset .55s ease;
-}
-.horizon-tree.is-open .tl-trunk{ transition-delay:0s; stroke-dashoffset:0; }
-.horizon-tree.is-open .tl-a,
-.horizon-tree.is-open .tl-b{ transition-delay:.18s; stroke-dashoffset:0; }
-.horizon-tree.is-open .tl-a1,
-.horizon-tree.is-open .tl-a2,
-.horizon-tree.is-open .tl-b1,
-.horizon-tree.is-open .tl-b2{ transition-delay:.38s; stroke-dashoffset:0; }
+.const-svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
 
-.tree-dot{
-  transform:scale(0); transform-box:fill-box; transform-origin:center;
-  opacity:0; transition:transform .3s ease, opacity .3s ease; transition-delay:.55s;
+.const-line{
+  stroke-dasharray:1; stroke-dashoffset:1; opacity:.5;
+  transition:stroke-dashoffset .9s ease;
 }
-.horizon-tree.is-open .tree-dot{ transform:scale(1); opacity:1; }
+.horizon-tree.is-open .const-line{ stroke-dashoffset:0; }
 
-.tree-leaf{
+.const-bg-dot{
+  fill:#9fb3c8; opacity:0;
+  animation:hz-twinkle-bg 4s ease-in-out infinite;
+  animation-play-state:paused;
+}
+.horizon-tree.is-open .const-bg-dot{ animation-play-state:running; }
+
+.const-star{
+  opacity:0; transform:scale(0); transform-box:fill-box; transform-origin:center;
+  transition:opacity .35s ease, transform .35s ease;
+  animation:hz-twinkle 3.2s ease-in-out infinite;
+  animation-play-state:paused;
+}
+.cs-1{ transition-delay:.08s; }
+.cs-2{ transition-delay:.28s; }
+.cs-3{ transition-delay:.48s; }
+.cs-4{ transition-delay:.68s; }
+.horizon-tree.is-open .const-star{ opacity:1; transform:scale(1); }
+.horizon-tree.is-open .cs-1{ animation-delay:.9s;  animation-play-state:running; }
+.horizon-tree.is-open .cs-2{ animation-delay:1.3s; animation-play-state:running; }
+.horizon-tree.is-open .cs-3{ animation-delay:1.7s; animation-play-state:running; }
+.horizon-tree.is-open .cs-4{ animation-delay:2.1s; animation-play-state:running; }
+
+@keyframes hz-twinkle{ 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:.55; transform:scale(.82); } }
+@keyframes hz-twinkle-bg{ 0%,100%{ opacity:.15; } 50%{ opacity:.55; } }
+
+.const-label{
   position:absolute; width:120px; text-align:center; transform:translate(-50%,-100%) translateY(4px);
   font-family:"IBM Plex Mono", monospace; font-size:11.5px; line-height:1.35; color:#dfe6f2;
-  opacity:0; transition:opacity .4s ease, transform .4s ease; transition-delay:.62s;
+  opacity:0; transition:opacity .4s ease, transform .4s ease;
 }
-.tree-leaf b{ display:block; font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:12.5px; color:#f2f3f8; margin-bottom:1px; }
-.horizon-tree.is-open .tree-leaf{ opacity:1; transform:translate(-50%,-100%) translateY(-6px); }
+.const-label b{ display:block; font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:12.5px; color:#f2f3f8; margin-bottom:1px; }
+.horizon-tree.is-open .const-label{ opacity:1; transform:translate(-50%,-100%) translateY(-6px); }
 
-.tl-1{ left:14.6%;  top:24%; }
-.tl-2{ left:36.5%;  top:21%; }
-.tl-3{ left:63.5%;  top:21%; }
-.tl-4{ left:85.4%;  top:24%; }
+.cl-1{ left:13.5%; top:67.5%; transition-delay:.28s; }
+.cl-2{ left:36.5%; top:32.5%; transition-delay:.48s; }
+.cl-3{ left:63.5%; top:50%;   transition-delay:.68s; }
+.cl-4{ left:83.3%; top:25%;   transition-delay:.88s; }
 
 @media (prefers-reduced-motion: reduce){
-  .horizon-tree, .tree-line, .tree-dot, .tree-leaf{ transition:none !important; }
+  .horizon-tree, .const-line, .const-star, .const-bg-dot, .const-label{ transition:none !important; animation:none !important; }
+  .horizon-tree.is-open .const-star{ opacity:1; transform:scale(1); }
+  .horizon-tree.is-open .const-bg-dot{ opacity:.35; }
 }
 @media (max-width:560px){
   .horizon-tree{ width:min(94vw,420px); }
-  .tree-leaf{ width:96px; font-size:10.5px; }
-  .tree-leaf b{ font-size:11.5px; }
+  .const-label{ width:96px; font-size:10.5px; }
+  .const-label b{ font-size:11.5px; }
 }
