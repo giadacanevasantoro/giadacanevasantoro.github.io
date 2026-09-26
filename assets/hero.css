@@ -167,20 +167,6 @@ html,body{
   margin:0; font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.14em;
   text-transform:uppercase; color:#666c82;
 }
-.horizon-row{
-  display:flex; gap:56px; flex-wrap:wrap; justify-content:center; align-items:center;
-}
-.horizon-item{
-  background:none; border:none; padding:14px; margin:0; cursor:pointer;
-  color:#6b7690; transition:color .25s ease, transform .25s ease;
-  -webkit-tap-highlight-color:transparent;
-}
-.horizon-item:hover,
-.horizon-item:focus-visible,
-.horizon-item.is-active{
-  color:#eaf4ff; transform:translateY(-3px); outline:none;
-}
-.horizon-icon-svg{ width:54px; height:54px; display:block; overflow:visible; }
 .horizon-caption{
   min-height:1.4em; margin:0; max-width:440px; text-align:center;
   font-family:"IBM Plex Mono", monospace; font-size:13px; letter-spacing:.01em;
@@ -188,31 +174,112 @@ html,body{
   transition:opacity .3s ease, transform .3s ease;
 }
 .horizon-caption.is-visible{ opacity:1; transform:translateY(0); }
-@media (max-width:520px){
-  .horizon-row{ gap:34px; }
-}
 
-/* ---- Music song list (Inside the Horizon) ---- */
-.horizon-tree.song-list{
-  list-style:none; margin:0; padding:0;
-  display:flex; flex-direction:column; align-items:center; gap:11px;
-  opacity:0; pointer-events:none; transition:opacity .3s ease;
+/* ---- Rotating topic cube + blob (Inside the Horizon) ---- */
+:root{ --cube-size:220px; }
+.cube-scene{
+  position:relative; width:var(--cube-size); height:var(--cube-size);
+  margin:10px 0 6px; transition:opacity .35s ease, transform .35s ease;
 }
-.horizon-tree.song-list.is-open{ opacity:1; pointer-events:auto; }
+.cube-scene.is-hidden{ opacity:0; transform:scale(.92); pointer-events:none; position:absolute; }
 
-.song-item{
-  font-family:"IBM Plex Mono", monospace; font-size:13px; line-height:1.4;
-  color:#c7cad6; text-align:center;
-  opacity:0; transform:translateY(6px);
-  transition:opacity .4s ease, transform .4s ease;
+.horizon-blob{
+  position:absolute; inset:-42%; z-index:0; pointer-events:none; opacity:.85;
+  animation: hz-blob-pulse 10s ease-in-out infinite, hz-blob-hue 20s linear infinite;
 }
-.song-item b{ display:block; font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:14px; color:#f2f3f8; }
-.horizon-tree.song-list.is-open .song-item{ opacity:1; transform:translateY(0); }
-.horizon-tree.song-list.is-open .song-item:nth-child(1){ transition-delay:.05s; }
-.horizon-tree.song-list.is-open .song-item:nth-child(2){ transition-delay:.15s; }
-.horizon-tree.song-list.is-open .song-item:nth-child(3){ transition-delay:.25s; }
-.horizon-tree.song-list.is-open .song-item:nth-child(4){ transition-delay:.35s; }
+.blob-svg{ width:100%; height:100%; overflow:visible; }
+@keyframes hz-blob-pulse{ 0%,100%{ transform:scale(1) rotate(0deg); } 50%{ transform:scale(1.08) rotate(6deg); } }
+@keyframes hz-blob-hue{ from{ filter:hue-rotate(0deg); } to{ filter:hue-rotate(360deg); } }
+
+.cube-perspective{
+  position:relative; z-index:1; width:100%; height:100%;
+  perspective:900px;
+}
+.cube{
+  position:relative; width:100%; height:100%; transform-style:preserve-3d;
+  animation:hz-cube-spin 24s linear infinite;
+}
+.cube:hover{ animation-play-state:paused; }
+@keyframes hz-cube-spin{
+  from{ transform:rotateX(-16deg) rotateY(0deg); }
+  to{   transform:rotateX(-16deg) rotateY(360deg); }
+}
+.cube-face{
+  position:absolute; inset:0; width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  border:1px solid rgba(223,230,242,0.32); background:rgba(255,255,255,0.02);
+  color:#dfe6f2; font:inherit; cursor:default;
+}
+button.cube-face{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
+button.cube-face:hover, button.cube-face:focus-visible{
+  background:rgba(255,255,255,0.05); border-color:rgba(255,217,168,0.4); outline:none;
+}
+.face-icon{ width:34px; height:34px; overflow:visible; }
+.face-label{
+  font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.06em;
+  text-transform:uppercase; color:#9297ab;
+}
+.face-front { transform: translateZ(calc(var(--cube-size) / 2)); }
+.face-back  { transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2)); }
+.face-right { transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2)); }
+.face-left  { transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2)); }
+.face-top   { transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2)); }
+.face-bottom{ transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2)); }
 
 @media (prefers-reduced-motion: reduce){
-  .horizon-tree.song-list, .song-item{ transition:none !important; }
+  .cube{ animation:none; transform:rotateX(-16deg) rotateY(-28deg); }
+  .horizon-blob{ animation:none; }
+}
+@media (max-width:520px){
+  :root{ --cube-size:170px; }
+}
+
+/* ---- Layers-of-spacetime reveal (music face) ---- */
+.layers-scene{
+  position:relative; width:min(94vw,520px); aspect-ratio:480/340;
+  color:#c7cad6; opacity:0; pointer-events:none;
+  transition:opacity .35s ease;
+}
+.layers-scene.is-open{ opacity:1; pointer-events:auto; }
+.layers-svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+.layers-close{
+  position:absolute; top:-2px; left:0; z-index:2;
+  background:none; border:none; padding:6px 0; cursor:pointer;
+  font-family:"IBM Plex Mono", monospace; font-size:12.5px; color:#9297ab;
+}
+.layers-close:hover{ color:#ffd9a8; }
+
+.box-edge{ stroke-dasharray:1; stroke-dashoffset:1; opacity:.55; transition:stroke-dashoffset .8s ease; }
+.layers-scene.is-open .box-edge{ stroke-dashoffset:0; }
+
+.layer{ opacity:0; transition:opacity .5s ease; }
+.layers-scene.is-open .layer{ opacity:1; }
+.layer-line{ stroke-linecap:round; }
+.layers-scene.is-open .layer{ animation:hz-vibrate 2.8s ease-in-out infinite; }
+
+@keyframes hz-vibrate{
+  0%,100%{ transform:translateY(0) scaleX(1); }
+  50%{ transform:translateY(-1.6px) scaleX(1.01); }
+}
+
+.layer-label{
+  position:absolute; text-align:left; transform:translate(4px,-50%);
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px; line-height:1.35; color:#dfe6f2;
+  opacity:0; transition:opacity .45s ease;
+}
+.layer-label b{ display:block; font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:12.5px; color:#f2f3f8; }
+.layers-scene.is-open .layer-label{ opacity:1; }
+.ly-1{ left:70.8%; top:70.6%; transition-delay:.5s; }
+.ly-2{ left:70.8%; top:55.9%; transition-delay:.68s; }
+.ly-3{ left:70.8%; top:41.2%; transition-delay:.86s; }
+.ly-4{ left:70.8%; top:26.5%; transition-delay:1.04s; }
+
+@media (prefers-reduced-motion: reduce){
+  .layers-scene, .box-edge, .layer, .layer-label{ transition:none !important; animation:none !important; }
+  .layers-scene.is-open .box-edge{ stroke-dashoffset:0; }
+  .layers-scene.is-open .layer, .layers-scene.is-open .layer-label{ opacity:1; }
+}
+@media (max-width:560px){
+  .layer-label{ font-size:10px; }
+  .layer-label b{ font-size:11px; }
 }
