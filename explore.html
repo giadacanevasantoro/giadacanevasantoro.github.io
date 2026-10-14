@@ -89,6 +89,61 @@
   </div>
 
 </div>
+<div class="astro-widget" id="astro-widget">
+  <button type="button" class="astro-btn" id="astro-btn" aria-expanded="false" aria-label="Site visitors">
+    <svg class="astro-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="24" cy="19" r="10"/>
+      <path d="M16.5,17 C18,13.5 20.5,12 24,12" opacity=".55"/>
+      <path d="M15,30 C15,26.5 19,24.5 24,24.5 C29,24.5 33,26.5 33,30 L34,39 C34,41.8 30,43.5 24,43.5 C18,43.5 14,41.8 14,39 Z"/>
+      <path d="M15,31 C10,33 7.5,37 8.5,41"/>
+      <path d="M33,31 C38,33 40.5,37 39.5,41"/>
+      <circle cx="20" cy="33" r="1.3" fill="currentColor" stroke="none" opacity=".8"/>
+      <circle cx="28" cy="33" r="1.3" fill="currentColor" stroke="none" opacity=".8"/>
+    </svg>
+  </button>
+  <div class="astro-panel" id="astro-panel" aria-hidden="true">
+    <p class="astro-count" id="astro-count" aria-live="polite">counting infalling astronauts&hellip;</p>
+    <a class="astro-link" href="https://giadacanevasantoro.goatcounter.com" target="_blank" rel="noopener">See where they're from &rarr;</a>
+  </div>
+</div>
+<script>
+(function(){
+  var btn = document.getElementById('astro-btn');
+  var panel = document.getElementById('astro-panel');
+  var countEl = document.getElementById('astro-count');
+  var open = false, loaded = false;
+
+  function setOpen(v){
+    open = v;
+    panel.classList.toggle('is-open', open);
+    panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open && !loaded) loadCount();
+  }
+  function loadCount(){
+    loaded = true;
+    fetch('https://giadacanevasantoro.goatcounter.com/counter/TOTAL.json')
+      .then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); })
+      .then(function(data){
+        var n = data && data.count;
+        countEl.innerHTML = n
+          ? '<span class="n">' + n + '</span> infalling astronauts have crossed the horizon'
+          : 'The counter is still waking up.';
+      })
+      .catch(function(){
+        countEl.textContent = 'The counter is still waking up — check back soon.';
+        loaded = false;
+      });
+  }
+  btn.addEventListener('click', function(e){ e.stopPropagation(); setOpen(!open); });
+  document.addEventListener('click', function(e){
+    if (open && !e.target.closest('#astro-widget')) setOpen(false);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && open) setOpen(false);
+  });
+})();
+</script>
 <script data-goatcounter="https://giadacanevasantoro.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 </body>
