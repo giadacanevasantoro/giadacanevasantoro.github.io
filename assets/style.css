@@ -181,6 +181,7 @@ ul.plain li, ol.plain li{ margin-bottom:7px; max-width:64ch; }
 }
 
 /* ---- Travel map ---- */
+.map-land{ fill:var(--panel-alt); stroke:var(--border-strong); stroke-width:0.6; }
 .map-wrap{ margin:10px 0 8px; }
 .map-svg{ width:100%; height:auto; display:block; border:1px solid var(--border); border-radius:14px; background:var(--panel); }
 .map-frame{ stroke:var(--border-strong); stroke-width:1; fill:none; }
